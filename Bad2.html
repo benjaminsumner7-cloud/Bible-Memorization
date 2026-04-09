@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scripture Strong | Bible Memorization</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+:root {
+  --primary: #0284c7; --primary-dark: #0369a1; --gold: #D4AF37; --gold-light: #E6C06B;
+  --success: #16a34a; --error: #ef4444; --warning: #f59e0b; --dark: #0f172a; --gray: #475569;
+  --light-gray: #94a3b8; --border: #e2e8f0; --surface: #f8fafc; --white: #ffffff;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08); --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+  --radius: 16px; --radius-lg: 24px; --transition: all 0.25s ease;
+  --memorized-bg: linear-gradient(135deg, #dcfce7, #bbf7d0); --memorized-border: #16a34a; --memorized-text: #15803d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%); color: var(--dark); line-height: 1.6; min-height: 100vh; }
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; transition: box-shadow 0.3s ease; }
+.nav.scrolled { box-shadow: var(--shadow); }
+.logo { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.75rem; background: linear-gradient(135deg, var(--gold), var(--primary)); -webkit-background-clip: text; background-clip: text; color: transparent; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.logo i { font-size: 1.3rem; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.nav-links { display: flex; gap: 6px; align-items: center; }
+.nav-link { font-weight: 600; color: var(--gray); padding: 8px 14px; border-radius: 12px; transition: var(--transition); display: flex; align-items: center; gap: 6px; font-size: 0.9rem; background: none; border: none; cursor: pointer; text-decoration: none; }
+.nav-link:hover, .nav-link.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; transform: translateY(-1px); }
+.nav-cta { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--dark); font-weight: 700; padding: 10px 22px; border-radius: 14px; border: none; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; transition: var(--transition); }
+.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212,175,55,0.4); }
+.screen { display: none; min-height: 100vh; padding-top: 96px; padding-bottom: 3rem; }
+.screen.active { display: block; animation: fadeIn 0.35s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.container { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; }
+.hero { text-align: center; padding: 3rem 1rem 2rem; }
+.hero-title { font-family: 'Playfair Display', serif; font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, var(--gold), var(--primary)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 1.5rem; }
+.hero-subtitle { font-size: 1.6rem; font-weight: 600; color: var(--dark); margin-bottom: 2rem; }
+.hero-verse { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 600; color: var(--primary-dark); line-height: 1.5; max-width: 650px; margin: 0 auto; padding: 2rem; background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; }
+.hero-verse::before, .hero-verse::after { content: '"'; font-family: Georgia, serif; font-size: 4.5rem; color: rgba(212,175,55,0.15); position: absolute; line-height: 1; }
+.hero-verse::before { top: -15px; left: -10px; }
+.hero-verse::after { bottom: -40px; right: -10px; transform: rotate(180deg); }
+.hero-reference { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-top: 1rem; }
+.mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1100px; margin: 3rem auto; padding: 0 1.5rem; }
+.mode-card { background: var(--white); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border: 2px solid transparent; }
+.mode-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--border); }
+.mode-card.selected { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(212,175,55,0.2), var(--shadow-lg); }
+.mode-icon { width: 64px; height: 64px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.6rem; }
+.mode-fill .mode-icon { background: #e0f2fe; color: #0284c7; }
+.mode-bank .mode-icon { background: #dcfce7; color: #16a34a; }
+.mode-quiz .mode-icon { background: #ffedd5; color: #ea580c; }
+.mode-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.75rem; }
+.mode-desc { color: var(--gray); font-size: 0.95rem; margin-bottom: 1.25rem; }
+.mode-features { display: flex; flex-wrap: wrap; gap: 6px; }
+.feature-tag { background: var(--surface); color: var(--gray); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid var(--border); }
+.btn { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 14px; padding: 14px 28px; font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2,132,199,0.35); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(0.5); }
+.btn-secondary { background: var(--white); color: var(--primary); border: 2px solid var(--primary); }
+.btn-secondary:hover { background: #f0f9ff; transform: translateY(-2px); }
+.btn-large { padding: 16px 40px; font-size: 1.15rem; }
+.btn-danger { background: linear-gradient(135deg, var(--error), #dc2626); }
+.btn-danger:hover { box-shadow: 0 6px 20px rgba(239,68,68,0.4); }
+.btn-tutorial { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+.btn-tutorial:hover { box-shadow: 0 6px 20px rgba(139,92,246,0.4); }
+.section-header { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; padding-bottom: 12px; border-bottom: 2px solid var(--gold); display: inline-block; }
+.verse-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; max-height: 55vh; overflow-y: auto; margin: 1.5rem 0; padding-right: 4px; }
+.verse-list::-webkit-scrollbar { width: 6px; }
+.verse-list::-webkit-scrollbar-track { background: var(--surface); border-radius: 8px; }
+.verse-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+.verse-item { background: var(--white); border-radius: 14px; padding: 1.25rem; box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border: 2px solid transparent; position: relative; }
+.verse-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.verse-item.selected { border-color: var(--primary); background: #f0f9ff; }
+.verse-item.memorized { background: var(--memorized-bg); border-color: var(--memorized-border); box-shadow: 0 4px 15px rgba(22, 163, 74, 0.15); }
+.memorized-badge { position: absolute; top: 8px; right: 12px; background: var(--memorized-border); color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.verse-ref { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--primary); margin-bottom: 4px; font-size: 1.15rem; }
+.verse-item.memorized .verse-ref { color: var(--memorized-text); }
+.verse-text { color: var(--dark); font-size: 0.95rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
+.verse-words { font-size: 0.85rem; color: var(--light-gray); }
+.memorized-info { font-size: 0.85rem; color: var(--success); font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.memorized-info i { color: var(--success); }
+.api-section { background: var(--white); border-radius: var(--radius); padding: 1.75rem; margin: 1.5rem 0; box-shadow: var(--shadow); border-top: 3px solid var(--gold); }
+.api-input-group { display: flex; gap: 12px; margin: 1rem 0; }
+.api-input { flex: 1; padding: 12px 18px; border: 2px solid var(--border); border-radius: 12px; font-size: 1rem; font-family: inherit; transition: var(--transition); }
+.api-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(2,132,199,0.15); }
+.api-result { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border); animation: fadeIn 0.4s ease-out; }
+.api-verse-ref { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--primary); font-size: 1.25rem; margin-bottom: 0.5rem; }
+.api-verse-text { font-size: 1.15rem; color: var(--dark); line-height: 1.6; font-weight: 500; }
+.difficulty-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+.difficulty-card { background: var(--white); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border: 2px solid transparent; text-align: center; }
+.difficulty-card:hover, .difficulty-card.selected { transform: translateY(-3px); border-color: var(--gold); box-shadow: var(--shadow-lg); }
+.difficulty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.difficulty-name { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; margin: 0.5rem 0; }
+.difficulty-desc { color: var(--gray); font-size: 0.95rem; margin-bottom: 1rem; min-height: 40px; }
+.difficulty-details { background: var(--surface); border-radius: 12px; padding: 14px; text-align: left; }
+.difficulty-details div { display: flex; justify-content: space-between; margin: 4px 0; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+.difficulty-details span:last-child { font-weight: 700; color: var(--primary); }
+.verse-display { background: var(--white); border-radius: var(--radius-lg); padding: 2rem 2.5rem; box-shadow: var(--shadow-lg); margin: 1.25rem 0; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-family: 'Playfair Display', serif; letter-spacing: 0.01em; border: 1px solid var(--border); position: relative; }
+.verse-content { font-size: 1.65rem; font-weight: 500; line-height: 1.75; color: var(--dark); }
+.verse-ref-bottom { font-weight: 700; color: var(--primary); font-size: 1rem; margin-top: 1rem; background: rgba(2, 132, 199, 0.08); padding: 6px 14px; border-radius: 20px; text-align: center; font-family: 'Playfair Display', serif; }
+.study-phase-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+.study-verse-text { font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 500; line-height: 1.85; color: var(--dark); text-align: center; letter-spacing: 0.015em; word-spacing: 0.1em; max-width: 900px; padding: 0.5rem; }
+.study-word { font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 500; line-height: 1.85; display: inline; animation: fadeInWord 0.4s ease both; }
+.study-reference-badge { margin-top: 1.5rem; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--primary); font-size: 1.3rem; background: rgba(2, 132, 199, 0.08); padding: 8px 20px; border-radius: 24px; text-align: center; }
+@keyframes fadeInWord { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 1024px) { .study-verse-text, .study-word { font-size: 2.4rem; line-height: 1.8; } }
+@media (max-width: 768px) { .study-verse-text, .study-word { font-size: 2.1rem; line-height: 1.75; letter-spacing: 0.01em; } .study-reference-badge { font-size: 1.15rem; padding: 6px 16px; } }
+@media (max-width: 480px) { .study-verse-text, .study-word { font-size: 1.85rem; line-height: 1.7; word-spacing: 0.05em; } .study-reference-badge { font-size: 1rem; padding: 5px 14px; } .verse-display { padding: 1.5rem 1.75rem; } }
+#fill-study-verse.verse-display, #bank-study-verse.verse-display, #quiz-study-verse.verse-display { padding: 2.5rem 3rem; min-height: 180px; }
+.blank-container { display: inline-flex; align-items: center; vertical-align: baseline; }
+.blank-input { background: rgba(2, 132, 199, 0.04); border: none; border-bottom: 3px dashed var(--primary); min-width: 70px; text-align: center; padding: 2px 6px; margin: 0 0.1em; font-family: inherit; font-size: inherit; font-weight: 600; color: var(--primary); outline: none; transition: var(--transition); border-radius: 4px 4px 0 0; line-height: 1.6; }
+.blank-input:hover { background: rgba(2, 132, 199, 0.08); }
+.blank-input:focus { background: rgba(2, 132, 199, 0.08); border-bottom-color: var(--primary-dark); border-bottom-width: 4px; box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15); }
+.blank-input.correct { border-bottom-color: var(--success) !important; border-bottom-style: solid; color: var(--success); background: rgba(22, 163, 74, 0.06); }
+.blank-input.incorrect { border-bottom-color: var(--error) !important; border-bottom-style: solid; color: var(--error); background: rgba(239, 68, 68, 0.06); }
+.blank-input.filled { background: rgba(2, 132, 199, 0.06); color: var(--primary); border-bottom-color: var(--primary); border-bottom-width: 3px; }
+.blank-input:disabled { background: transparent; border-bottom: 3px dashed #cbd5e1; color: #cbd5e1; cursor: not-allowed; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.word-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 1.25rem 0; padding: 1rem; background: var(--surface); border-radius: 16px; border: 1px solid var(--border); min-height: 50px; }
+.word-chip { background: var(--white); border: 2px solid var(--border); border-radius: 14px; padding: 8px 18px; font-weight: 700; cursor: grab; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.05); user-select: none; font-size: 1rem; }
+.word-chip:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: var(--shadow); }
+.word-chip:active { cursor: grabbing; }
+.word-chip.used { opacity: 0.5; cursor: not-allowed; transform: scale(0.95); border-style: dashed; }
+.word-chip.correct { background: #dcfce7; border-color: var(--success); color: var(--success); }
+.word-chip.incorrect { background: #fee2e2; border-color: var(--error); color: var(--error); }
+.blank-slot { display: inline-block; min-width: 80px; border-bottom: 3px dashed var(--light-gray); margin: 0 0.15em; padding: 0 8px; text-align: center; vertical-align: baseline; min-height: 1.8em; transition: var(--transition); cursor: pointer; }
+.blank-slot.filled { border-bottom-style: solid; border-bottom-color: var(--primary); font-weight: 600; color: var(--primary); }
+.blank-slot.correct { border-bottom-color: var(--success); color: var(--success); }
+.blank-slot.incorrect { border-bottom-color: var(--error); color: var(--error); }
+.quiz-questions-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin: 1rem 0; padding: 0; }
+.question-block { background: var(--white); border-radius: 14px; padding: 16px 18px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.question-title { font-weight: 700; color: var(--dark); margin-bottom: 10px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+.question-number { background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0; }
+.mc-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; }
+.mc-option { background: var(--white); border: 2px solid var(--border); border-radius: 10px; padding: 10px 8px; font-weight: 600; cursor: pointer; transition: var(--transition); text-align: center; font-size: 0.9rem; word-break: break-word; }
+.mc-option:hover:not(.disabled) { border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow); }
+.mc-option.selected { border-color: var(--primary); background: #f0f9ff; font-weight: 700; }
+.mc-option.correct { background: #dcfce7; border-color: var(--success); color: var(--success); font-weight: 700; }
+.mc-option.incorrect { background: #fee2e2; border-color: var(--error); color: var(--error); font-weight: 600; }
+.mc-option.disabled { pointer-events: none; opacity: 0.7; }
+.timer-container { text-align: center; margin: 1.5rem 0; }
+.timer-circle { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1rem; background: conic-gradient(var(--primary) 0%, var(--border) 0%); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: var(--shadow); transition: background 0.3s ease; }
+.timer-circle::before { content: ''; position: absolute; width: 100px; height: 100px; border-radius: 50%; background: var(--white); }
+.timer-text { position: relative; z-index: 1; font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+.timer-label { font-weight: 700; font-size: 1.1rem; margin-bottom: 1.25rem; }
+.study-extra-btn { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #0f172a; border: none; border-radius: 30px; padding: 12px 20px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.35); position: relative; overflow: hidden; min-width: 170px; }
+.study-extra-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-25deg); transition: all 0.6s; }
+.study-extra-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 191, 36, 0.5); }
+.study-extra-btn:hover::after { left: 150%; transition: all 0.8s; }
+.study-extra-btn:active:not(:disabled) { transform: translateY(0); }
+.study-extra-btn:disabled { background: linear-gradient(135deg, #9ca3af, #6b7280); color: #f3f4f6; cursor: not-allowed; box-shadow: none; }
+.study-extra-btn:disabled:hover { transform: none; }
+.study-extra-badge { background: rgba(255,255,255,0.25); padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em; }
+.study-extra-btn:disabled .study-extra-badge { background: rgba(0,0,0,0.2); color: #e5e7eb; }
+.results-card { background: var(--white); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-lg); text-align: center; max-width: 650px; margin: 2rem auto; border-top: 4px solid var(--gold); }
+.results-icon { font-size: 4rem; margin-bottom: 1rem; color: var(--success); }
+.results-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 800; margin-bottom: 0.75rem; }
+.results-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.5rem 0; }
+.result-stat { background: var(--surface); border-radius: 14px; padding: 1rem; border: 1px solid var(--border); }
+.result-value { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 800; color: var(--primary); }
+.result-label { color: var(--gray); font-weight: 600; font-size: 0.9rem; }
+.game-info { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--white); border-radius: 12px; margin-bottom: 1rem; box-shadow: var(--shadow); border: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; }
+.game-info-item { display: flex; align-items: center; gap: 6px; }
+.game-info-label { font-weight: 600; color: var(--gray); font-size: 0.9rem; }
+.game-info-value { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; }
+.toast { background: var(--white); border-radius: 14px; padding: 14px 20px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; margin-top: 10px; transform: translateX(140%); transition: transform 0.3s ease; border-left: 4px solid var(--primary); max-width: 380px; }
+.toast.show { transform: translateX(0); }
+.toast-success { border-left-color: var(--success); }
+.toast-error { border-left-color: var(--error); }
+.toast-info { border-left-color: var(--primary); }
+.toast-warning { border-left-color: var(--warning); }
+.toast-icon { font-size: 1.2rem; flex-shrink: 0; }
+.modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; animation: fadeIn 0.2s ease-out; }
+.modal-overlay.active { display: flex; }
+.modal-content { background: var(--white); border-radius: var(--radius-lg); padding: 2.5rem; max-width: 480px; width: 90%; box-shadow: var(--shadow-lg); text-align: center; }
+.modal-icon { font-size: 3rem; color: var(--error); margin-bottom: 1rem; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem; }
+.modal-message { color: var(--gray); margin-bottom: 2rem; line-height: 1.6; }
+.modal-buttons { display: flex; gap: 1rem; justify-content: center; }
+.confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 1000; display: none; }
+.confetti { position: absolute; width: 10px; height: 10px; animation: confettiFall 3s ease-out forwards; }
+@keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+.rules-menu { display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 1.5rem auto 0; }
+.rule-card { display: flex; align-items: center; gap: 1.25rem; background: var(--white); padding: 1.25rem 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer; text-decoration: none; color: var(--dark); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden; }
+.rule-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--primary); transform: scaleY(0); transition: transform 0.3s ease; transform-origin: top; }
+.rule-card:hover { transform: translateX(6px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.rule-card:hover::before { transform: scaleY(1); }
+.rule-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: var(--surface); color: var(--primary); flex-shrink: 0; transition: all 0.3s ease; }
+.rule-card:hover .rule-icon { background: var(--primary); color: white; transform: scale(1.05); }
+.rule-content { flex: 1; }
+.rule-content h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; margin: 0 0 0.25rem; }
+.rule-content p { color: var(--gray); font-size: 0.95rem; line-height: 1.4; margin: 0; }
+.rule-arrow { color: var(--light-gray); transition: all 0.3s ease; font-size: 0.95rem; }
+.rule-card:hover .rule-arrow { color: var(--primary); transform: translateX(4px); }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+.stat-card { background: var(--white); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border); text-align: center; }
+.stat-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+.stat-icon.xp { color: var(--gold); } .stat-icon.games { color: var(--primary); } .stat-icon.trophy { color: var(--success); } .stat-icon.fire { color: var(--warning); } .stat-icon.medal { color: #8b5cf6; }
+.stat-val { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 800; color: var(--dark); margin-bottom: 0.25rem; }
+.stat-label { color: var(--gray); font-weight: 600; font-size: 0.95rem; }
+.diff-level-box { background: var(--surface); border-radius: 12px; padding: 1.25rem; margin-top: 1rem; border: 1px solid var(--border); }
+.diff-level-box h4 { font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+.memorized-verse-section { margin-top: 2.5rem; background: var(--white); padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--border); }
+.memorized-verse-section h3 { font-family: 'Playfair Display', serif; margin-bottom: 1rem; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+.memorized-verse-item { padding: 0.75rem; background: var(--memorized-bg); border-radius: 10px; margin-bottom: 0.5rem; border-left: 3px solid var(--memorized-border); }
+.memorized-verse-ref { font-weight: 700; color: var(--memorized-text); }
+.memorized-verse-xp { color: var(--success); font-weight: 600; font-size: 0.9rem; }
+@media (max-width: 768px) {
+  .nav { padding: 0 1rem; } .nav-links { gap: 2px; } .nav-link span { display: none; }
+  .hero-title { font-size: 3rem; } .hero-verse { font-size: 1.5rem; padding: 1.5rem; }
+  .mode-cards, .stats-grid, .settings-grid { grid-template-columns: 1fr; }
+  .results-stats { grid-template-columns: 1fr; } .modal-buttons { flex-direction: column; }
+}
+@media (max-width: 480px) {
+  .verse-display { font-size: 1.35rem; padding: 1.5rem; } .study-actions { flex-direction: column; align-items: center; }
+  .rule-card { padding: 1rem 1.25rem; gap: 1rem; } .rule-content h3 { font-size: 1rem; }
+}
+.text-center { text-align: center; } .mt-2 { margin-top: 0.5rem; } .mt-4 { margin-top: 1rem; } .mt-6 { margin-top: 1.5rem; }
+.mb-4 { margin-bottom: 1rem; } .mb-6 { margin-bottom: 1.5rem; } .hidden { display: none !important; }
+.fa-solid, .fa-regular, .fa-brands { display: inline-block; font-style: normal; font-variant: normal; text-rendering: auto; line-height: 1; -webkit-font-smoothing: antialiased; }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="main-nav">
+  <div class="logo" id="home-btn"><i class="fa-solid fa-book-bible"></i> Scripture Strong</div>
+  <div class="nav-links">
+    <a href="#" class="nav-link active" data-screen="home"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="#" class="nav-link" data-screen="fill"><i class="fa-solid fa-pen-to-square"></i><span>Fill</span></a>
+    <a href="#" class="nav-link" data-screen="bank"><i class="fa-solid fa-layer-group"></i><span>Word Bank</span></a>
+    <a href="#" class="nav-link" data-screen="quiz"><i class="fa-solid fa-list-check"></i><span>Quiz</span></a>
+    <a href="#" class="nav-link" data-screen="rules-main"><i class="fa-solid fa-circle-question"></i><span>Rules</span></a>
+    <a href="#" class="nav-link" data-screen="stats"><i class="fa-solid fa-chart-pie"></i><span>Stats</span></a>
+    <button class="nav-cta" id="nav-random-btn"><i class="fa-solid fa-shuffle"></i> Random</button>
+  </div>
+</nav>
+
+<div class="modal-overlay" id="cancel-modal">
+  <div class="modal-content">
+    <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <h3 class="modal-title">Leave Game?</h3>
+    <p class="modal-message">Leaving will forfeit ALL session XP earned in this game. Your overall progress and total XP remain saved.</p>
+    <div class="modal-buttons">
+      <button class="btn btn-secondary" id="cancel-stay"><i class="fa-solid fa-arrow-left"></i> Stay in Game</button>
+      <button class="btn" id="cancel-quit" style="background: linear-gradient(135deg, var(--error), #dc2626);"><i class="fa-solid fa-house"></i> Quit (Lose XP)</button>
+    </div>
+  </div>
+</div>
+
+<!-- TUTORIAL OVERLAY -->
+<div class="tutorial-overlay" id="tutorial-overlay" style="position: fixed; inset: 0; z-index: 2000; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s ease-out;">
+  <div class="tutorial-content" style="background: var(--white); border-radius: var(--radius-lg); padding: 2rem; max-width: 520px; width: 92%; box-shadow: var(--shadow-lg); position: relative; border-top: 4px solid var(--gold);">
+    <button class="tutorial-close" id="tutorial-close" style="position: absolute; top: 12px; right: 12px; background: var(--surface); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--gray); transition: var(--transition);"><i class="fa-solid fa-xmark"></i></button>
+    <div class="tutorial-progress" id="tutorial-progress" style="display: flex; gap: 6px; margin-bottom: 1.5rem; justify-content: center;"></div>
+    <div class="tutorial-step" style="text-align: center; margin-bottom: 1.5rem;">
+      <div class="tutorial-step-icon" id="tutorial-icon" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary);"><i class="fa-solid fa-lightbulb"></i></div>
+      <h3 class="tutorial-step-title" id="tutorial-title" style="font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--dark);">Welcome!</h3>
+      <p class="tutorial-step-desc" id="tutorial-desc" style="color: var(--gray); line-height: 1.6; font-size: 1.05rem;">Let's learn how to play!</p>
+    </div>
+    <div class="tutorial-buttons" style="display: flex; gap: 0.75rem; justify-content: center;">
+      <button class="tutorial-btn tutorial-btn-prev" id="tutorial-prev" disabled style="padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); border: none; font-size: 0.95rem; background: var(--surface); color: var(--dark);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button class="tutorial-btn tutorial-btn-next" id="tutorial-next" style="padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); border: none; font-size: 0.95rem; background: var(--primary); color: white;">Next <i class="fa-solid fa-arrow-right"></i></button>
+      <button class="tutorial-btn tutorial-btn-skip" id="tutorial-skip" style="padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); border: 1px solid var(--border); font-size: 0.95rem; background: transparent; color: var(--gray);">Skip</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<div class="confetti-container" id="confetti-container"></div>
+
+<!-- HOME SCREEN -->
+<div id="home-screen" class="screen active">
+  <div class="hero">
+    <h1 class="hero-title">Scripture Strong</h1>
+    <p class="hero-subtitle">Find God's Hidden Tresures Through Bible Memorization</p>
+    <p class="hero-verse">I have hidden your word in my heart,<br>that I might not sin against you.</p>
+    <p class="hero-reference">— Psalm 119:11</p>
+  </div>
+  <div class="mode-cards">
+    <div class="mode-card mode-fill selected" data-mode="fill">
+      <div class="mode-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+      <h3 class="mode-title">Fill in the Blank</h3>
+      <p class="mode-desc">Type the missing words sequentially to complete Bible verses.</p>
+      <div class="mode-features"><span class="feature-tag">Type in the Blank</span><span class="feature-tag">Three Levels</span></div>
+    </div>
+    <div class="mode-card mode-bank" data-mode="bank">
+      <div class="mode-icon"><i class="fa-solid fa-layer-group"></i></div>
+      <h3 class="mode-title">Word Bank</h3>
+      <p class="mode-desc">Drag or click words from a bank to fill the blanks.</p>
+      <div class="mode-features"><span class="feature-tag">Drag & Drop</span><span class="feature-tag">Click to Select</span><span class="feature-tag">Final Challenge</span></div>
+    </div>
+    <div class="mode-card mode-quiz" data-mode="quiz">
+      <div class="mode-icon"><i class="fa-solid fa-list-check"></i></div>
+      <h3 class="mode-title">Quiz Mode</h3>
+      <p class="mode-desc">Choose the correct word from multiple options.</p>
+      <div class="mode-features"><span class="feature-tag">Easy: 4 Options</span><span class="feature-tag">Medium: 6 Options</span><span class="feature-tag">Hard: 8 Options</span></div>
+    </div>
+  </div>
+  <div class="text-center mt-6">
+    <button class="btn btn-gold btn-large" id="start-game-btn"><i class="fa-solid fa-play"></i> Start Your Journey</button>
+    <p style="color: var(--gray); margin-top: 1rem; font-weight: 500;">Choose a game mode or click to begin</p>
+  </div>
+</div>
+
+<!-- FILL SCREEN -->
+<div id="fill-screen" class="screen">
+  <div class="container">
+    <div class="flex items-center gap-3 mb-6"><button class="btn btn-secondary" id="fill-back"><i class="fa-solid fa-arrow-left"></i> Back</button><h1 class="section-header">Fill in the Blank</h1></div>
+    <div id="fill-verse-select">
+      <h2 class="section-header">Choose a Verse</h2>
+      <div class="api-section">
+        <h3 style="font-weight:700;margin-bottom:0.5rem;"><i class="fa-solid fa-cloud-arrow-down"></i> Fetch a Verse</h3>
+        <p style="color:var(--gray);margin-bottom:1rem;font-size:0.95rem;">Type a reference (e.g., John 3:16)</p>
+        <div class="api-input-group">
+          <input type="text" class="api-input" id="fill-api-ref" placeholder="Enter Bible reference">
+          <button class="btn" id="fill-fetch-btn"><i class="fa-solid fa-magnifying-glass"></i> Fetch</button>
+        </div>
+        <div class="api-result hidden" id="fill-api-result"></div>
+      </div>
+      <div class="verse-list" id="fill-verse-list"></div>
+    </div>
+    <div id="fill-difficulty-select" class="hidden">
+      <button class="btn btn-secondary mb-4" id="fill-back-verses"><i class="fa-solid fa-arrow-left"></i> Back to Verses</button>
+      <div class="text-center mb-6"><h2 style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;" id="fill-selected-ref"></h2><p style="color:var(--gray);font-size:1.1rem;margin-top:0.5rem;" id="fill-selected-text"></p></div>
+      <h2 class="section-header">Choose Difficulty</h2>
+      <div class="difficulty-grid">
+        <div class="difficulty-card selected" data-difficulty="easy"><div class="difficulty-icon">🌱</div><div class="difficulty-name">Seedling</div><div class="difficulty-desc">Perfect for beginners</div><div class="difficulty-details"><div><span>Start:</span><span>1-2 blanks</span></div><div><span>Add/round:</span><span>1-2 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+        <div class="difficulty-card" data-difficulty="medium"><div class="difficulty-icon">🌿</div><div class="difficulty-name">Disciple</div><div class="difficulty-desc">Growing memory skills</div><div class="difficulty-details"><div><span>Start:</span><span>2-4 blanks</span></div><div><span>Add/round:</span><span>2-4 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+        <div class="difficulty-card" data-difficulty="hard"><div class="difficulty-icon">🌳</div><div class="difficulty-name">Apostle</div><div class="difficulty-desc">Challenge yourself</div><div class="difficulty-details"><div><span>Start:</span><span>3-6 blanks</span></div><div><span>Add/round:</span><span>3-6 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+      </div>
+      <div class="text-center mt-6"><button class="btn btn-gold btn-large" id="fill-start-game"><i class="fa-solid fa-play"></i> Start Memorizing</button></div>
+    </div>
+    <div id="fill-study-phase" class="hidden text-center">
+      <div class="timer-container"><div class="timer-circle"><div class="timer-text" id="fill-timer">30</div></div><div class="timer-label">Study Time - Memorize the verse</div></div>
+      <div class="verse-display" id="fill-study-verse"></div>
+      <div class="study-actions">
+        <button class="btn btn-large" id="fill-skip-study"><i class="fa-solid fa-forward"></i> I'm Ready!</button>
+        <button class="study-extra-btn" id="fill-extra-study" disabled><i class="fa-solid fa-clock"></i> +20s <span class="study-extra-badge">2 left</span></button>
+      </div>
+    </div>
+    <div id="fill-game-phase" class="hidden">
+      <div class="game-info">
+        <div class="game-info-item"><span class="game-info-label">Round:</span><span class="game-info-value"><span id="fill-round-num">1</span>/<span id="fill-total-rounds">6</span></span></div>
+        <div class="game-info-item"><span class="game-info-label">Session XP:</span><span class="game-info-value" id="fill-xp">0</span></div>
+        <div class="game-info-item"><span class="game-info-label">Accuracy:</span><span class="game-info-value" id="fill-accuracy">—</span></div>
+        <button class="study-extra-btn" id="fill-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">2 left</span></button>
+      </div>
+      <div class="verse-display" id="fill-game-verse"></div>
+      <div class="text-center mt-4">
+        <p id="fill-instructions" style="color:var(--gray);margin-bottom:1rem;">Just start typing! Press <strong>Enter</strong> to move to the next blank.</p>
+        <button class="btn btn-large" id="fill-submit-answer" disabled><i class="fa-solid fa-check"></i> Submit Answer</button>
+      </div>
+    </div>
+    <div id="fill-results-phase" class="hidden">
+      <div class="results-card">
+        <div class="results-icon"><i class="fa-solid fa-trophy"></i></div>
+        <h3 class="results-title">Round Complete!</h3>
+        <p id="fill-results-message" style="color:var(--gray);margin-bottom:1.5rem;">Great job!</p>
+        <div class="results-stats">
+          <div class="result-stat"><div class="result-label">Round XP</div><div class="result-value" id="fill-round-xp">0</div></div>
+          <div class="result-stat"><div class="result-label">Round Accuracy</div><div class="result-value" id="fill-round-accuracy">0%</div></div>
+          <div class="result-stat"><div class="result-label">Verse Accuracy</div><div class="result-value" id="fill-verse-accuracy">0%</div></div>
+          <div class="result-stat"><div class="result-label">Session XP</div><div class="result-value" id="fill-total-xp">0</div></div>
+        </div>
+        <button class="btn btn-gold btn-large" id="fill-next-round"><i class="fa-solid fa-arrow-right"></i> Next Round</button>
+        <p style="color:var(--light-gray);font-size:0.85rem;margin-top:0.75rem;">Press <kbd style="background:var(--surface);padding:2px 8px;border-radius:4px;border:1px solid var(--border);">Enter</kbd> to continue</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BANK SCREEN -->
+<div id="bank-screen" class="screen">
+  <div class="container">
+    <div class="flex items-center gap-3 mb-6"><button class="btn btn-secondary" id="bank-back"><i class="fa-solid fa-arrow-left"></i> Back</button><h1 class="section-header">Word Bank Challenge</h1></div>
+    <div id="bank-verse-select">
+      <h2 class="section-header">Choose a Verse</h2>
+      <div class="api-section">
+        <h3 style="font-weight:700;margin-bottom:0.5rem;"><i class="fa-solid fa-cloud-arrow-down"></i> Fetch a Verse</h3>
+        <p style="color:var(--gray);margin-bottom:1rem;font-size:0.95rem;">Type a reference (e.g., John 3:16)</p>
+        <div class="api-input-group">
+          <input type="text" class="api-input" id="bank-api-ref" placeholder="Enter Bible reference">
+          <button class="btn" id="bank-fetch-btn"><i class="fa-solid fa-magnifying-glass"></i> Fetch</button>
+        </div>
+        <div class="api-result hidden" id="bank-api-result"></div>
+      </div>
+      <div class="verse-list" id="bank-verse-list"></div>
+    </div>
+    <div id="bank-difficulty-select" class="hidden">
+      <button class="btn btn-secondary mb-4" id="bank-back-verses"><i class="fa-solid fa-arrow-left"></i> Back to Verses</button>
+      <div class="text-center mb-6"><h2 style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;" id="bank-selected-ref"></h2><p style="color:var(--gray);font-size:1.1rem;margin-top:0.5rem;" id="bank-selected-text"></p></div>
+      <h2 class="section-header">Choose Difficulty</h2>
+      <div class="difficulty-grid">
+        <div class="difficulty-card selected" data-difficulty="easy"><div class="difficulty-icon">🌱</div><div class="difficulty-name">Seedling</div><div class="difficulty-desc">Perfect for beginners</div><div class="difficulty-details"><div><span>Start:</span><span>1-2 blanks</span></div><div><span>Add/round:</span><span>1-2 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+        <div class="difficulty-card" data-difficulty="medium"><div class="difficulty-icon">🌿</div><div class="difficulty-name">Disciple</div><div class="difficulty-desc">Growing memory skills</div><div class="difficulty-details"><div><span>Start:</span><span>1-3 blanks</span></div><div><span>Add/round:</span><span>2-4 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+        <div class="difficulty-card" data-difficulty="hard"><div class="difficulty-icon">🌳</div><div class="difficulty-name">Apostle</div><div class="difficulty-desc">Challenge yourself</div><div class="difficulty-details"><div><span>Start:</span><span>2-4 blanks</span></div><div><span>Add/round:</span><span>3-6 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+      </div>
+      <div class="text-center mt-6"><button class="btn btn-gold btn-large" id="bank-start-game"><i class="fa-solid fa-play"></i> Start Memorizing</button></div>
+    </div>
+    <div id="bank-study-phase" class="hidden text-center">
+      <div class="timer-container"><div class="timer-circle"><div class="timer-text" id="bank-timer">30</div></div><div class="timer-label">Study Time - Memorize the verse</div></div>
+      <div class="verse-display" id="bank-study-verse"></div>
+      <div class="study-actions">
+        <button class="btn btn-large" id="bank-skip-study"><i class="fa-solid fa-forward"></i> I'm Ready!</button>
+        <button class="study-extra-btn" id="bank-extra-study" disabled><i class="fa-solid fa-clock"></i> +20s <span class="study-extra-badge">2 left</span></button>
+      </div>
+    </div>
+    <div id="bank-game-phase" class="hidden">
+      <div class="game-info">
+        <div class="game-info-item"><span class="game-info-label">Round:</span><span class="game-info-value"><span id="bank-round-num">1</span>/<span id="bank-total-rounds">6</span></span></div>
+        <div class="game-info-item"><span class="game-info-label">Session XP:</span><span class="game-info-value" id="bank-xp">0</span></div>
+        <div class="game-info-item"><span class="game-info-label">Accuracy:</span><span class="game-info-value" id="bank-accuracy">—</span></div>
+        <button class="study-extra-btn" id="bank-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">2 left</span></button>
+      </div>
+      <div class="verse-display" id="bank-game-verse"></div>
+      <div class="word-bank" id="bank-word-bank"></div>
+      <div class="text-center mt-4">
+        <p id="bank-instructions" style="color:var(--gray);margin-bottom:1rem;">Drag or click words to fill blanks. Press <strong>Enter</strong> when done.</p>
+        <button class="btn btn-large" id="bank-submit-answer" disabled><i class="fa-solid fa-check"></i> Submit Answer</button>
+      </div>
+    </div>
+    <div id="bank-results-phase" class="hidden">
+      <div class="results-card">
+        <div class="results-icon"><i class="fa-solid fa-trophy"></i></div>
+        <h3 class="results-title">Round Complete!</h3>
+        <p id="bank-results-message" style="color:var(--gray);margin-bottom:1.5rem;">Great job!</p>
+        <div class="results-stats">
+          <div class="result-stat"><div class="result-label">XP Earned</div><div class="result-value" id="bank-round-xp">0</div></div>
+          <div class="result-stat"><div class="result-label">Round Accuracy</div><div class="result-value" id="bank-round-accuracy">0%</div></div>
+          <div class="result-stat"><div class="result-label">Verse Accuracy</div><div class="result-value" id="bank-verse-accuracy">0%</div></div>
+          <div class="result-stat"><div class="result-label">Session XP</div><div class="result-value" id="bank-total-xp">0</div></div>
+        </div>
+        <button class="btn btn-gold btn-large" id="bank-next-round"><i class="fa-solid fa-arrow-right"></i> Next Round</button>
+        <p style="color:var(--light-gray);font-size:0.85rem;margin-top:0.75rem;">Press <kbd style="background:var(--surface);padding:2px 8px;border-radius:4px;border:1px solid var(--border);">Enter</kbd> to continue</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen" class="screen">
+  <div class="container">
+    <div class="flex items-center gap-3 mb-6"><button class="btn btn-secondary" id="quiz-back"><i class="fa-solid fa-arrow-left"></i> Back</button><h1 class="section-header">Bible Verse Quiz</h1></div>
+    <div id="quiz-verse-select">
+      <h2 class="section-header">Choose a Verse</h2>
+      <div class="api-section">
+        <h3 style="font-weight:700;margin-bottom:0.5rem;"><i class="fa-solid fa-cloud-arrow-down"></i> Fetch a Verse</h3>
+        <p style="color:var(--gray);margin-bottom:1rem;font-size:0.95rem;">Type a reference (e.g., John 3:16)</p>
+        <div class="api-input-group">
+          <input type="text" class="api-input" id="quiz-api-ref" placeholder="Enter Bible reference">
+          <button class="btn" id="quiz-fetch-btn"><i class="fa-solid fa-magnifying-glass"></i> Fetch</button>
+        </div>
+        <div class="api-result hidden" id="quiz-api-result"></div>
+      </div>
+      <div class="verse-list" id="quiz-verse-list"></div>
+    </div>
+    <div id="quiz-difficulty-select" class="hidden">
+      <button class="btn btn-secondary mb-4" id="quiz-back-verses"><i class="fa-solid fa-arrow-left"></i> Back to Verses</button>
+      <div class="text-center mb-6"><h2 style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;" id="quiz-selected-ref"></h2><p style="color:var(--gray);font-size:1.1rem;margin-top:0.5rem;" id="quiz-selected-text"></p></div>
+      <h2 class="section-header">Choose Difficulty</h2>
+      <div class="difficulty-grid">
+        <div class="difficulty-card selected" data-difficulty="easy"><div class="difficulty-icon">🌱</div><div class="difficulty-name">Seedling</div><div class="difficulty-desc">Perfect for beginners</div><div class="difficulty-details"><div><span>Start:</span><span>1-2 blanks</span></div><div><span>Add/round:</span><span>1-2 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+        <div class="difficulty-card" data-difficulty="medium"><div class="difficulty-icon">🌿</div><div class="difficulty-name">Disciple</div><div class="difficulty-desc">Growing memory skills</div><div class="difficulty-details"><div><span>Start:</span><span>2-4 blanks</span></div><div><span>Add/round:</span><span>2-4 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+        <div class="difficulty-card" data-difficulty="hard"><div class="difficulty-icon">🌳</div><div class="difficulty-name">Apostle</div><div class="difficulty-desc">Challenge yourself</div><div class="difficulty-details"><div><span>Start:</span><span>3-6 blanks</span></div><div><span>Add/round:</span><span>3-6 blanks</span></div><div><span>Rounds:</span><span>Based on length</span></div></div></div>
+      </div>
+      <div class="text-center mt-6"><button class="btn btn-gold btn-large" id="quiz-start-game"><i class="fa-solid fa-play"></i> Start Quiz</button></div>
+    </div>
+    <div id="quiz-study-phase" class="hidden text-center">
+      <div class="timer-container"><div class="timer-circle"><div class="timer-text" id="quiz-timer">30</div></div><div class="timer-label">Study Time - Memorize the verse</div></div>
+      <div class="verse-display" id="quiz-study-verse"></div>
+      <div class="study-actions">
+        <button class="btn btn-large" id="quiz-skip-study"><i class="fa-solid fa-forward"></i> I'm Ready!</button>
+        <button class="study-extra-btn" id="quiz-extra-study" disabled><i class="fa-solid fa-clock"></i> +20s <span class="study-extra-badge">2 left</span></button>
+      </div>
+    </div>
+    <div id="quiz-game-phase" class="hidden">
+      <div class="game-info">
+        <div class="game-info-item"><span class="game-info-label">Round:</span><span class="game-info-value"><span id="quiz-round-num">1</span>/<span id="quiz-total-rounds">6</span></span></div>
+        <div class="game-info-item"><span class="game-info-label">Session XP:</span><span class="game-info-value" id="quiz-xp">0</span></div>
+        <div class="game-info-item"><span class="game-info-label">Accuracy:</span><span class="game-info-value" id="quiz-accuracy">—</span></div>
+        <button class="study-extra-btn" id="quiz-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">2 left</span></button>
+      </div>
+      <div class="verse-display" id="quiz-game-verse"></div>
+      <div class="quiz-questions-wrap" id="quiz-questions-container"></div>
+      <div class="text-center mt-3">
+        <p id="quiz-instructions" style="color:var(--gray);margin-bottom:0.75rem;font-size:0.95rem;">Select answers for ALL blanks, then click Submit to check.</p>
+        <button class="btn btn-large" id="quiz-submit-answer" disabled><i class="fa-solid fa-check"></i> Submit All Answers</button>
+      </div>
+    </div>
+    <div id="quiz-results-phase" class="hidden">
+      <div class="results-card">
+        <div class="results-icon"><i class="fa-solid fa-trophy"></i></div>
+        <h3 class="results-title">Round Complete!</h3>
+        <p id="quiz-results-message" style="color:var(--gray);margin-bottom:1.5rem;">Great job!</p>
+        <div class="results-stats">
+          <div class="result-stat"><div class="result-label">XP Earned</div><div class="result-value" id="quiz-round-xp">0</div></div>
+          <div class="result-stat"><div class="result-label">Round Accuracy</div><div class="result-value" id="quiz-round-accuracy">0%</div></div>
+          <div class="result-stat"><div class="result-label">Verse Accuracy</div><div class="result-value" id="quiz-verse-accuracy">0%</div></div>
+          <div class="result-stat"><div class="result-label">Session XP</div><div class="result-value" id="quiz-total-xp">0</div></div>
+        </div>
+        <button class="btn btn-gold btn-large" id="quiz-next-round"><i class="fa-solid fa-arrow-right"></i> Next Round</button>
+        <p style="color:var(--light-gray);font-size:0.85rem;margin-top:0.75rem;">Press <kbd style="background:var(--surface);padding:2px 8px;border-radius:4px;border:1px solid var(--border);">Enter</kbd> to continue</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RULES SCREENS -->
+<div id="rules-main-screen" class="screen">
+  <div class="container" style="max-width:800px;">
+    <div class="flex items-center gap-3 mb-4"><button class="btn btn-secondary" id="rules-back-to-home"><i class="fa-solid fa-arrow-left"></i> Back</button><h1 class="section-header" style="margin-bottom:0;">How to Play</h1></div>
+    <p style="color:var(--gray);margin-bottom:1rem;font-size:1.05rem;text-align:center;">Select a section below to learn the rules:</p>
+    <div class="rules-menu">
+      <a href="#" class="rule-card" onclick="handleRulesNav('rules-general');return false;">
+        <div class="rule-icon"><i class="fa-solid fa-book-open"></i></div>
+        <div class="rule-content"><h3>General & XP System</h3><p>Learn how the game works, how to earn XP, and how difficulty scaling functions.</p></div>
+        <i class="fa-solid fa-chevron-right rule-arrow"></i>
+      </a>
+      <a href="#" class="rule-card" onclick="handleRulesNav('rules-fill');return false;">
+        <div class="rule-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+        <div class="rule-content"><h3>Fill in the Blank</h3><p>Typing mechanics, all difficulty levels, progression rules, and first-try bonus structure.</p></div>
+        <i class="fa-solid fa-chevron-right rule-arrow"></i>
+      </a>
+      <a href="#" class="rule-card" onclick="handleRulesNav('rules-bank');return false;">
+        <div class="rule-icon"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="rule-content"><h3>Word Bank</h3><p>Drag & drop mechanics, final round rules, and placement scoring.</p></div>
+        <i class="fa-solid fa-chevron-right rule-arrow"></i>
+      </a>
+      <a href="#" class="rule-card" onclick="handleRulesNav('rules-quiz');return false;">
+        <div class="rule-icon"><i class="fa-solid fa-list-check"></i></div>
+        <div class="rule-content"><h3>Quiz Mode</h3><p>Multiple choice format, submission rules, and accuracy tracking.</p></div>
+        <i class="fa-solid fa-chevron-right rule-arrow"></i>
+      </a>
+      <a href="#" class="rule-card" onclick="handleRulesNav('rules-random');return false;">
+        <div class="rule-icon"><i class="fa-solid fa-shuffle"></i></div>
+        <div class="rule-content"><h3>Random Mode</h3><p>Instantly jump into a surprise verse, difficulty, and game mode. Great for quick practice!</p></div>
+        <i class="fa-solid fa-chevron-right rule-arrow"></i>
+      </a>
+    </div>
+    
+    <div style="margin-top:2rem;background:var(--white);padding:1.5rem;border-radius:var(--radius);border:1px solid var(--border);">
+      <h3 style="margin-bottom:1rem;color:var(--dark);"><i class="fa-solid fa-graduation-cap" style="color:var(--primary);margin-right:8px;"></i> Interactive Tutorials</h3>
+      <p style="color:var(--gray);margin-bottom:1rem;">Prefer a step-by-step visual guide? Launch an interactive tutorial here:</p>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-tutorial" id="rules-tutorial-fill"><i class="fa-solid fa-pen-to-square"></i> Fill Tutorial</button>
+        <button class="btn btn-tutorial" id="rules-tutorial-bank"><i class="fa-solid fa-layer-group"></i> Bank Tutorial</button>
+        <button class="btn btn-tutorial" id="rules-tutorial-quiz"><i class="fa-solid fa-list-check"></i> Quiz Tutorial</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="rules-general-screen" class="screen">
+  <div class="container" style="max-width:800px;">
+    <div class="flex items-center gap-3 mb-4"><button class="btn btn-secondary" onclick="handleRulesNav('rules-main')"><i class="fa-solid fa-arrow-left"></i> Back to Rules</button><h1 class="section-header" style="margin-bottom:0;">General Rules & XP</h1></div>
+    <div class="rule-section" style="background:var(--white);padding:2.5rem;border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-top:1.5rem;">
+      <h3 style="margin-bottom:1rem;color:var(--dark);"><i class="fa-solid fa-gamepad" style="color:var(--primary);margin-right:10px;"></i>Game Flow</h3>
+      <ul style="padding-left:1.5rem;color:var(--gray);line-height:1.8;margin-bottom:1.5rem;">
+        <li>Choose a mode, pick a verse, select difficulty</li>
+        <li>30-second Study Phase (skip if ready, or use +20s for -15 XP)</li>
+        <li><strong>Extra Study Time:</strong> Only available when you have MORE than 15 XP. It costs exactly 15 XP per use.</li>
+        <li><strong>Peek Verse:</strong> Shows the full verse for 5 seconds during the round. Costs 50 XP from Total XP.</li>
+        <li>Rounds get harder each round until you master the entire verse</li>
+        <li>Press <strong>Enter</strong> ONLY on Results screens to advance</li>
+        <li>Quitting forfeits session XP only. Overall stats remain saved.</li>
+      </ul>
+      <div class="xp-box" style="background:var(--surface);padding:1.5rem;border-radius:12px;border:1px solid var(--border);">
+        <h4 style="margin-bottom:0.75rem;color:var(--dark);font-size:1.2rem;"><i class="fa-solid fa-coins" style="color:var(--gold);margin-right:8px;"></i>How XP Works</h4>
+        <p style="color:var(--gray);line-height:1.6;margin-bottom:1rem;"><strong>Session XP:</strong> XP earned during the current game. It is added to your permanent total ONLY when you successfully master the entire verse. If you quit mid-game, Session XP is lost.</p>
+        <p style="color:var(--gray);line-height:1.6;margin-bottom:1rem;"><strong>Accuracy:</strong> Calculated based on total attempts per round. If you get one blank wrong twice, it counts as 2 wrong out of 2 attempts for that round.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:0.95rem;">
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 0;">Base per correct word</td><td style="text-align:right;font-weight:700;">10 XP</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 0;">Perfect Round Bonus</td><td style="text-align:right;font-weight:700;">+50 XP</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 0;">Fill-Only First-Try Bonus</td><td style="text-align:right;font-weight:700;">+5 XP/word</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 0;">Streak Bonus (per completed game)</td><td style="text-align:right;font-weight:700;">+5 XP × streak (max +50)</td></tr>
+          <tr><td style="padding:8px 0;">Extra Study Time Cost</td><td style="text-align:right;font-weight:700;color:var(--error);">-15 XP each (need >15 to use)</td></tr>
+          <tr><td style="padding:8px 0;">Peek Verse Cost</td><td style="text-align:right;font-weight:700;color:var(--error);">-50 XP each (need 50 to use)</td></tr>
+        </table>
+        <p style="margin-top:1rem;font-weight:600;color:var(--primary-dark);">Difficulty Multipliers: Seedling (1x) • Disciple (1.5x) • Apostle (2x)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="rules-fill-screen" class="screen">
+  <div class="container" style="max-width:800px;">
+    <div class="flex items-center gap-3 mb-4"><button class="btn btn-secondary" onclick="handleRulesNav('rules-main')"><i class="fa-solid fa-arrow-left"></i> Back to Rules</button><h1 class="section-header" style="margin-bottom:0;">Fill in the Blank Rules</h1></div>
+    <div class="rule-section" style="background:var(--white);padding:2.5rem;border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-top:1.5rem;">
+      <h3 style="margin-bottom:1rem;color:var(--dark);"><i class="fa-solid fa-keyboard" style="color:var(--primary);margin-right:10px;"></i>How to Play</h3>
+      <ul style="padding-left:1.5rem;color:var(--gray);line-height:1.8;">
+        <li>Just start typing! The first keystroke auto-focuses the first blank</li>
+        <li>Press <strong>Enter</strong> or <strong>Tab</strong> to lock your answer and move to the next blank</li>
+        <li>Blanks fill strictly left-to-right as you read the verse</li>
+        <li><strong>Click any blank</strong> to edit it at any time. Type and press Enter to advance.</li>
+        <li>Correct = <span style="color:var(--success);font-weight:700;">green</span>, Wrong = <span style="color:var(--error);font-weight:700;">red (stays red until fixed)</span></li>
+        <li><strong>Accuracy:</strong> Calculated based on total attempts. Each submission counts as an attempt for every blank.</li>
+        <li><strong>First-try Bonus:</strong> Words you get right on the first attempt earn +5 XP each</li>
+        <li><strong>Each round randomly selects which words to blank</strong> so you learn all words in the verse</li>
+      </ul>
+      <div class="diff-level-box"><h4><i class="fa-solid fa-seedling" style="color:var(--success);"></i> Seedling (Easy)</h4><p style="color:var(--gray);margin-bottom:0.5rem;">Starts with <strong>1-2 blanks</strong>, adds <strong>1-2 per round</strong>, rounds based on verse length. Perfect for beginners.</p></div>
+      <div class="diff-level-box"><h4><i class="fa-solid fa-cross" style="color:var(--warning);"></i> Disciple (Medium)</h4><p style="color:var(--gray);margin-bottom:0.5rem;">Starts with <strong>2-4 blanks</strong>, adds <strong>2-4 per round</strong>, rounds based on verse length. Balanced challenge.</p></div>
+      <div class="diff-level-box"><h4><i class="fa-solid fa-fire" style="color:var(--error);"></i> Apostle (Hard)</h4><p style="color:var(--gray);">Starts with <strong>3-6 blanks</strong>, adds <strong>3-6 per round</strong>, rounds based on verse length. 2x XP multiplier!</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="rules-bank-screen" class="screen">
+  <div class="container" style="max-width:800px;">
+    <div class="flex items-center gap-3 mb-4"><button class="btn btn-secondary" onclick="handleRulesNav('rules-main')"><i class="fa-solid fa-arrow-left"></i> Back to Rules</button><h1 class="section-header" style="margin-bottom:0;">Word Bank Rules</h1></div>
+    <div class="rule-section" style="background:var(--white);padding:2.5rem;border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-top:1.5rem;">
+      <h3 style="margin-bottom:1rem;color:var(--dark);"><i class="fa-solid fa-boxes-stacked" style="color:var(--primary);margin-right:10px;"></i>How to Play</h3>
+      <ul style="padding-left:1.5rem;color:var(--gray);line-height:1.8;">
+        <li>Drag words to blanks OR click a word then click a blank</li>
+        <li>Click filled blanks to return words to the bank</li>
+        <li>Final round blanks out the ENTIRE verse</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="rules-quiz-screen" class="screen">
+  <div class="container" style="max-width:800px;">
+    <div class="flex items-center gap-3 mb-4"><button class="btn btn-secondary" onclick="handleRulesNav('rules-main')"><i class="fa-solid fa-arrow-left"></i> Back to Rules</button><h1 class="section-header" style="margin-bottom:0;">Quiz Mode Rules</h1></div>
+    <div class="rule-section" style="background:var(--white);padding:2.5rem;border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-top:1.5rem;">
+      <h3 style="margin-bottom:1rem;color:var(--dark);"><i class="fa-solid fa-list-check" style="color:var(--primary);margin-right:10px;"></i>How to Play</h3>
+      <ul style="padding-left:1.5rem;color:var(--gray);line-height:1.8;">
+        <li>Numbered blanks match multiple-choice questions</li>
+        <li><strong>Easy: 4 options</strong> | <strong>Medium: 6 options</strong> | <strong>Hard: 8 options</strong></li>
+        <li><strong>Must answer ALL</strong> questions before Submit enables</li>
+        <li>Click Submit to check all at once. Fix wrong answers and retry</li>
+      </ul>
+      <div class="diff-level-box"><h4><i class="fa-solid fa-seedling" style="color:var(--success);"></i> Seedling (Easy)</h4><p style="color:var(--gray);margin-bottom:0.5rem;">Starts with <strong>1-2 blanks</strong>, adds <strong>1-2 per round</strong>, rounds based on verse length. Perfect for beginners.</p></div>
+      <div class="diff-level-box"><h4><i class="fa-solid fa-cross" style="color:var(--warning);"></i> Disciple (Medium)</h4><p style="color:var(--gray);margin-bottom:0.5rem;">Starts with <strong>2-4 blanks</strong>, adds <strong>2-4 per round</strong>, rounds based on verse length. Balanced challenge.</p></div>
+      <div class="diff-level-box"><h4><i class="fa-solid fa-fire" style="color:var(--error);"></i> Apostle (Hard)</h4><p style="color:var(--gray);">Starts with <strong>3-6 blanks</strong>, adds <strong>3-6 per round</strong>, rounds based on verse length. 2x XP multiplier!</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="rules-random-screen" class="screen">
+  <div class="container" style="max-width:800px;">
+    <div class="flex items-center gap-3 mb-4"><button class="btn btn-secondary" onclick="handleRulesNav('rules-main')"><i class="fa-solid fa-arrow-left"></i> Back to Rules</button><h1 class="section-header" style="margin-bottom:0;">Random Mode Rules</h1></div>
+    <div class="rule-section" style="background:var(--white);padding:2.5rem;border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-top:1.5rem;">
+      <h3 style="margin-bottom:1rem;color:var(--dark);"><i class="fa-solid fa-shuffle" style="color:var(--warning);margin-right:10px;"></i>How It Works</h3>
+      <ul style="padding-left:1.5rem;color:var(--gray);line-height:1.8;">
+        <li>Click the <strong>Random</strong> button in the top right corner.</li>
+        <li>The game instantly selects a <strong>random verse</strong>, <strong>difficulty</strong>, and <strong>game mode</strong> for you.</li>
+        <li>You'll jump straight into the 30-second <strong>Study Phase</strong>.</li>
+        <li>Play through the rounds just like a normal game.</li>
+        <li>Perfect for quick practice sessions or when you can't decide what to play!</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- STATS SCREEN -->
+<div id="stats-screen" class="screen">
+  <div class="container" style="max-width:800px;">
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+      <div class="flex items-center gap-3">
+        <button class="btn btn-secondary" id="stats-back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <h1 class="section-header" style="margin-bottom:0;">Your Progress</h1>
+      </div>
+      <button class="btn btn-danger" id="stats-reset" style="font-size:0.95rem;padding:10px 20px;"><i class="fa-solid fa-rotate-left"></i> Reset All Stats</button>
+    </div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div style="margin-top:2.5rem;background:var(--white);padding:2rem;border-radius:var(--radius-lg);box-shadow:var(--shadow);border:1px solid var(--border);">
+      <h3 style="font-family:'Playfair Display',serif;margin-bottom:1rem;color:var(--dark);"><i class="fa-solid fa-chart-line" style="color:var(--primary);margin-right:8px;"></i>Accuracy Breakdown</h3>
+      <div style="background:var(--surface);border-radius:12px;padding:1rem;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-weight:600;"><span>Total Correct</span><span id="stats-right" style="color:var(--success);">0</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-weight:600;"><span>Total Attempted</span><span id="stats-attempted" style="color:var(--dark);">0</span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid var(--border);padding-top:0.5rem;"><span>Overall Accuracy</span><span id="stats-acc" style="color:var(--primary);">0%</span></div>
+      </div>
+    </div>
+    <div class="memorized-verse-section" id="memorized-verses-section">
+      <h3><i class="fa-solid fa-check-circle" style="color:var(--success);"></i> Memorized Verses</h3>
+      <div id="memorized-verse-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BIBLE_VERSES = [
+  {ref:"Genesis 1:1",text:"In the beginning God created the heavens and the earth",words:9},
+  {ref:"Psalm 23:1",text:"The Lord is my shepherd I shall not want",words:8},
+  {ref:"Psalm 46:10",text:"Be still and know that I am God",words:7},
+  {ref:"Psalm 119:11",text:"I have hidden your word in my heart that I might not sin against you",words:13},
+  {ref:"Proverbs 3:5",text:"Trust in the Lord with all your heart",words:7},
+  {ref:"Philippians 4:13",text:"I can do all things through Christ who strengthens me",words:9},
+  {ref:"John 14:6",text:"I am the way the truth and the life",words:8},
+  {ref:"Psalm 119:105",text:"Your word is a lamp to my feet and a light to my path",words:12},
+  {ref:"Matthew 5:14",text:"You are the light of the world",words:6},
+  {ref:"Isaiah 41:10",text:"Fear not for I am with you",words:6},
+  {ref:"Micah 6:8",text:"Act justly love mercy walk humbly with your God",words:8},
+  {ref:"Matthew 28:19",text:"Go therefore and make disciples of all nations",words:7},
+  {ref:"John 3:16",text:"For God so loved the world that he gave his only Son",words:11},
+  {ref:"Jeremiah 29:11",text:"For I know the plans I have for you declares the Lord",words:10},
+  {ref:"Psalm 23:4",text:"Even though I walk through the valley of the shadow of death I will fear no evil",words:15},
+  {ref:"Romans 12:2",text:"Do not conform to the pattern of this world",words:8},
+  {ref:"Philippians 4:6",text:"Do not be anxious about anything but in every situation by prayer",words:12},
+  {ref:"Matthew 6:33",text:"Seek first his kingdom and his righteousness",words:6},
+  {ref:"Psalm 37:4",text:"Take delight in the Lord and he will give you the desires of your heart",words:13},
+  {ref:"Isaiah 40:31",text:"Those who hope in the Lord will renew their strength",words:9},
+  {ref:"Romans 8:28",text:"And we know that in all things God works for the good",words:10},
+  {ref:"1 Corinthians 13:4",text:"Love is patient love is kind it does not envy",words:9},
+  {ref:"Romans 8:38",text:"Neither death nor life neither angels nor demons can separate us",words:11},
+  {ref:"Psalm 139:14",text:"I praise you because I am fearfully and wonderfully made",words:10},
+  {ref:"Colossians 3:12",text:"Clothe yourselves with compassion kindness humility gentleness and patience",words:8},
+  {ref:"2 Timothy 1:7",text:"For God gave us a spirit not of fear but of power",words:11},
+  {ref:"Hebrews 11:1",text:"Now faith is the assurance of things hoped for",words:8},
+  {ref:"Psalm 51:10",text:"Create in me a clean heart O God",words:7},
+  {ref:"Matthew 22:37",text:"Love the Lord your God with all your heart",words:8},
+  {ref:"Galatians 5:22",text:"The fruit of the Spirit is love joy peace patience",words:9}
+];
+
+const SKIP_WORDS = new Set(['the','a','an','in','on','at','to','for','of','with','by','and','or','but','i','you','he','she','it','we','they','my','your','his','her','am','is','are','was','no','not','so','if','as','be']);
+const XP_MULT = { easy: 1, medium: 1.5, hard: 2 };
+const EXTRA_STUDY_COST = 15;
+const HELP_COST = 50;
+const HELP_COUNTS = { easy: 3, medium: 2, hard: 0 };
+
+const state = {
+  mode:'fill', difficulty:'easy', verse:null, words:[],
+  roundConfigs:[], currentRound:0, totalRounds:0, xp:0,
+  wordsCorrect:0, wordsWrong:0, completed:false,
+  inGame:false, studyTimer:null, studySeconds:30, studySecondsInitial:30, extraStudyUses:2,
+  helpsLeft: 0,
+  createdVerses:{fill:[],bank:[],quiz:[]},
+  memorizedVersesByMode: { fill: {}, bank: {}, quiz: {} },
+  fillBlanks:[], fillAnswers:[], fillActiveIdx:0, fillPhase:'filling', fillWrongSet:null, fillWrongHistory:null, fillCorrectSet:null, fillFirstTryOk:0, fillSubmitCount:0,
+  bankBlanks:[], bankAnswers:{}, bankCumulativeBlanks:null, bankPool: [],
+  quizBlanks:[], quizQuestions:[], quizAnswers:{}, quizChecked:false,
+  pendingNavigation:null, fetching:false,
+  stats: { totalXp:0, gamesPlayed:0, versesMastered:0, currentStreak:0, maxStreak:0, totalRight:0, totalAttempted:0 }
+};
+
+const $ = id => document.getElementById(id);
+const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; };
+
+function toast(msg,type='info',duration=3000) {
+  const c=$('toast-container'); const t=document.createElement('div');
+  t.className=`toast toast-${type}`;
+  const icons={success:'fa-solid fa-circle-check',error:'fa-solid fa-circle-xmark',info:'fa-solid fa-circle-info',warning:'fa-solid fa-triangle-exclamation'};
+  t.innerHTML=`<i class="${icons[type]||icons.info} toast-icon"></i><span>${msg}</span>`;
+  c.appendChild(t); setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},duration);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id)?.classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.toggle('active',l.dataset.screen===id.replace('-screen','')));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function confetti() {
+  const c=$('confetti-container'); c.style.display='block'; c.innerHTML='';
+  const colors=['#D4AF37','#0284c7','#16a34a','#ea580c','#ef4444','#8b5cf6'];
+  for(let i=0;i<120;i++){
+    const p=document.createElement('div'); p.className='confetti';
+    p.style.left=Math.random()*100+'%'; p.style.backgroundColor=colors[Math.floor(Math.random()*colors.length)];
+    p.style.width=Math.random()*10+6+'px'; p.style.height=Math.random()*10+6+'px';
+    p.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    p.style.animationDelay=Math.random()*2+'s'; p.style.animationDuration=Math.random()*3+2.5+'s';
+    c.appendChild(p);
+  }
+  setTimeout(()=>{c.style.display='none';},5500);
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('ss_created_fill', JSON.stringify(state.createdVerses.fill));
+    localStorage.setItem('ss_created_bank', JSON.stringify(state.createdVerses.bank));
+    localStorage.setItem('ss_created_quiz', JSON.stringify(state.createdVerses.quiz));
+    localStorage.setItem('ss_stats', JSON.stringify(state.stats));
+  } catch(e) {}
+}
+function loadState() {
+  try {
+    const f=localStorage.getItem('ss_created_fill'); if(f) state.createdVerses.fill=JSON.parse(f);
+    const b=localStorage.getItem('ss_created_bank'); if(b) state.createdVerses.bank=JSON.parse(b);
+    const q=localStorage.getItem('ss_created_quiz'); if(q) state.createdVerses.quiz=JSON.parse(q);
+    const s=localStorage.getItem('ss_stats'); if(s) state.stats=JSON.parse(s);
+  } catch(e) {}
+}
+function resetStats() {
+  state.stats = { totalXp:0, gamesPlayed:0, versesMastered:0, currentStreak:0, maxStreak:0, totalRight:0, totalAttempted:0 };
+  state.memorizedVersesByMode = { fill: {}, bank: {}, quiz: {} };
+  updateStatsDisplay(); saveState();
+  toast('All stats have been reset.','warning',4000);
+}
+
+function selectBlanks(words,count) {
+  const avail=words.map((w,i)=>({word:w.toLowerCase(),i})).filter(x=>!SKIP_WORDS.has(x.word)&&x.word.length>2).map(x=>x.i);
+  if(avail.length<count) return shuffle([...Array(words.length).keys()]).slice(0,count);
+  return shuffle(avail).slice(0,count);
+}
+
+function genRounds(mode,diff,wc) {
+  let rounds=[];
+  const cfg = { easy:{startMin:1, startMax:2, addMin:1, addMax:2}, medium:{startMin:2, startMax:4, addMin:2, addMax:4}, hard:{startMin:3, startMax:6, addMin:3, addMax:6} };
+  const c = cfg[diff];
+  const start = c.startMin + Math.floor(Math.random() * (c.startMax - c.startMin + 1));
+  const add = c.addMin + Math.floor(Math.random() * (c.addMax - c.addMin + 1));
+  const totalRounds = Math.min(10, Math.max(4, Math.floor(wc / 2)));
+  let cur = Math.min(start, wc - 1);
+  for(let i = 0; i < totalRounds && cur < wc; i++) { rounds.push(cur); cur = Math.min(cur + add, wc - 1); }
+  rounds.push(wc);
+  return rounds;
+}
+
+function renderVerseList(mode) {
+  const el=$(mode+'-verse-list'); if(!el)return; el.innerHTML='';
+  const modeMemo = state.memorizedVersesByMode[mode] || {};
+  BIBLE_VERSES.forEach(v=>{
+    const d=document.createElement('div'); d.className='verse-item';
+    const isMemorized = modeMemo.hasOwnProperty(v.ref);
+    if(isMemorized) { d.classList.add('memorized'); const badge = document.createElement('div'); badge.className = 'memorized-badge'; badge.innerHTML = `<i class="fa-solid fa-check"></i> Verse Memorized`; d.appendChild(badge); }
+    d.innerHTML=`<div class="verse-ref">${v.ref}</div><div class="verse-text">${v.text}</div><div class="verse-words">${v.words} words</div>`;
+    if(isMemorized) { d.innerHTML += `<div class="memorized-info"><i class="fa-solid fa-check-circle"></i> Verse Memorized</div>`; }
+    d.onclick=()=>{ document.querySelectorAll(`#${mode}-verse-list .verse-item`).forEach(x=>x.classList.remove('selected')); d.classList.add('selected'); state.verse=v; $(mode+'-verse-select').classList.add('hidden'); $(mode+'-difficulty-select').classList.remove('hidden'); $(mode+'-selected-ref').textContent=v.ref; $(mode+'-selected-text').textContent=v.text; };
+    el.appendChild(d);
+  });
+}
+
+async function fetchVerse(ref,mode) {
+  if(state.fetching)return; state.fetching=true;
+  const resEl=$(mode+'-api-result'); const btn=$(mode+'-fetch-btn'); btn.disabled=true;
+  resEl.classList.remove('hidden'); resEl.innerHTML='<p style="color:var(--gray);"><i class="fa-solid fa-spinner fa-spin"></i> Fetching...</p>';
+  try {
+    const r=await fetch('https://bible-api.com/'+encodeURIComponent(ref)+'?translation=web');
+    if(!r.ok)throw new Error(); const data=await r.json(); if(!data.text)throw new Error();
+    const text=data.text.replace(/[^\w\s']/g,' ').replace(/\s+/g,' ').trim();
+    const wc=text.split(' ').filter(w=>w).length;
+    resEl.innerHTML=`<div class="api-verse-ref">${data.reference}</div><div class="api-verse-text">${text}</div><p style="color:var(--light-gray);font-size:0.85rem;margin-top:8px;">WEB • ${wc} words</p><button class="btn btn-secondary mt-2" id="${mode}-use-api"><i class="fa-solid fa-check"></i> Use This Verse</button>`;
+    $(mode+'-use-api').onclick=()=>{ state.verse={ref:data.reference,text,words:wc}; $(mode+'-verse-select').classList.add('hidden'); $(mode+'-difficulty-select').classList.remove('hidden'); $(mode+'-selected-ref').textContent=data.reference; $(mode+'-selected-text').textContent=text; const exists=state.createdVerses[mode].some(v=>v.ref===data.reference); if(!exists){state.createdVerses[mode].push({ref:data.reference,text,words:wc,date:new Date().toLocaleDateString(),difficulty:state.difficulty});saveState();} toast('Verse loaded!','success'); };
+    toast('Verse fetched!','success');
+  } catch(e) { resEl.innerHTML=`<p style="color:var(--error);"><i class="fa-solid fa-triangle-exclamation"></i> Could not fetch.</p>`; toast('Verse not found','error'); } finally { state.fetching=false; btn.disabled=false; }
+}
+
+function startStudy(mode) {
+  state.words=state.verse.text.split(' ').filter(w=>w);
+  state.roundConfigs=genRounds(mode,state.difficulty,state.words.length);
+  state.totalRounds=state.roundConfigs.length; state.currentRound=1; state.xp=0; state.wordsCorrect=0; state.wordsWrong=0; state.completed=false;
+  state.inGame=true; state.studySeconds=30; state.studySecondsInitial=30; state.extraStudyUses=2;
+  state.helpsLeft = HELP_COUNTS[state.difficulty];
+  updateExtraStudyBtn(mode); updateHelpBtn(mode); updateUIGameState();
+  const sv=$(mode+'-study-verse'); sv.innerHTML = `<div class="study-phase-wrapper"><div class="study-verse-text" id="${mode}-study-text-container"></div><div class="study-reference-badge">${state.verse.ref}</div></div>`;
+  const container = $(mode + '-study-text-container');
+  state.words.forEach((w,i)=>{ const s=document.createElement('span'); s.className='study-word'; s.textContent=w; s.style.animation=`fadeInWord 0.4s ease ${i*0.06}s both`; container.appendChild(s); if (i < state.words.length - 1) container.appendChild(document.createTextNode(' ')); });
+  $(mode+'-timer').textContent='30'; updateTimerCircle(mode,30);
+  $(mode+'-verse-select').classList.add('hidden'); $(mode+'-difficulty-select').classList.add('hidden');
+  $(mode+'-study-phase').classList.remove('hidden'); $(mode+'-game-phase').classList.add('hidden'); $(mode+'-results-phase').classList.add('hidden');
+  state.studyTimer=setInterval(()=>{state.studySeconds--;$(mode+'-timer').textContent=state.studySeconds;updateTimerCircle(mode,state.studySeconds);if(state.studySeconds<=0){stopStudy();startRound(mode);}},1000);
+  toast('Study phase started! Just start typing when ready.','info',3000);
+}
+
+function updateTimerCircle(mode, sec) {
+  const circle = document.querySelector(`#${mode}-study-phase .timer-circle`); 
+  if(!circle) return;
+  const initial = state.studySecondsInitial || 30;
+  const pct = ((initial - sec) / initial) * 100;
+  circle.style.background = `conic-gradient(var(--primary) ${Math.min(100, pct)}%, var(--border) ${Math.min(100, pct)}%)`;
+  $(mode+'-timer').style.color = sec <= 5 ? 'var(--error)' : 'var(--primary)';
+}
+
+function stopStudy() { clearInterval(state.studyTimer); state.studyTimer=null; }
+function skipStudy(mode) { stopStudy(); $(mode+'-study-phase').classList.add('hidden'); startRound(mode); }
+
+function updateExtraStudyBtn(mode) {
+  const btn=$(mode+'-extra-study'); if(!btn) return;
+  const count = state.extraStudyUses; const canAfford = state.xp > EXTRA_STUDY_COST;
+  btn.disabled = count <= 0 || !canAfford;
+  btn.innerHTML = count <= 0 ? `<i class="fa-solid fa-lock"></i> No extra time left` : !canAfford ? `<i class="fa-solid fa-clock"></i> Need >15 XP` : `<i class="fa-solid fa-clock"></i> +20s <span class="study-extra-badge">${count} left</span>`;
+}
+
+function updateHelpBtn(mode) {
+  const btn = $(mode + '-help-btn'); if(!btn) return;
+  const count = state.helpsLeft; const canAfford = state.stats.totalXp >= HELP_COST;
+  btn.disabled = count <= 0 || !canAfford;
+  btn.innerHTML = count <= 0 ? `<i class="fa-solid fa-lock"></i> No helps left` : !canAfford ? `<i class="fa-solid fa-clock"></i> Need 50 XP` : `<i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">${count} left</span>`;
+}
+
+function startRound(mode) {
+  const blankCount=state.roundConfigs[state.currentRound-1];
+  const isFinal=blankCount>=state.words.length;
+  $(mode+'-round-num').textContent=state.currentRound; $(mode+'-total-rounds').textContent=state.totalRounds;
+  updateXPHighlight(mode, state.xp); updateAccuracyDisplay(mode); updateHelpBtn(mode);
+  $(mode+'-study-phase').classList.add('hidden'); $(mode+'-game-phase').classList.remove('hidden'); $(mode+'-results-phase').classList.add('hidden');
+  if(mode==='fill')setupFillRound(blankCount,isFinal);
+  else if(mode==='bank')setupBankRound(blankCount,isFinal);
+  else setupQuizRound(blankCount,isFinal);
+  if(isFinal) $(mode+'-instructions').textContent='Final Challenge: Fill the ENTIRE verse!';
+  else {const msgs={fill:`Just start typing! ${blankCount} blank(s) this round.`,bank:`Drag or click words. ${blankCount} blank(s) this round.`,quiz:'Select ALL answers, then Submit.'};$(mode+'-instructions').textContent=msgs[mode];}
+  $(mode+'-submit-answer').disabled=true;
+}
+
+function updateAccuracyDisplay(mode) {
+  const el=$(mode+'-accuracy'); if(!el)return;
+  const total=state.wordsCorrect+state.wordsWrong; if(total===0){el.textContent='—';return;}
+  const acc = Math.min(100, Math.round((state.wordsCorrect / total) * 100));
+  el.textContent = acc + '%'; el.style.color=acc>=80?'var(--success)':acc>=50?'#f59e0b':'var(--error)';
+}
+
+function updateXPHighlight(mode,val) { 
+  const el=$(mode+'-xp'); el.textContent=val; el.style.transform = 'scale(1.15)'; el.style.color = val >= 100 ? 'var(--success)' : 'var(--error)';
+  setTimeout(() => { el.style.transform = 'scale(1)'; el.style.color = 'var(--primary)'; }, 300);
+}
+
+function calculateXP(correctCount, isPerfect) { return Math.round((correctCount * 10 * XP_MULT[state.difficulty]) + (isPerfect ? 50 : 0)); }
+
+// ==================== FILL MODE ====================
+function setupFillRound(count,isFinal) {
+  state.fillBlanks = selectBlanks(state.words, Math.min(count, state.words.length)).sort((a,b) => a-b);
+  state.fillAnswers = new Array(state.fillBlanks.length).fill(''); state.fillActiveIdx = 0; state.fillPhase = 'filling'; 
+  state.fillWrongSet = new Set(); state.fillCorrectSet = new Set(); state.fillFirstTryOk = 0; state.fillSubmitCount = 0;
+  if(window.fillAutoFocusHandler) document.removeEventListener('keydown', window.fillAutoFocusHandler);
+  window.fillAutoFocusHandler = (e) => {
+    if(state.fillPhase !== 'filling') return;
+    if(document.activeElement.tagName !== 'INPUT' && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault(); focusFillBlank();
+      setTimeout(() => { const inp = document.querySelector(`#fill-game-verse .blank-input[data-blank="${state.fillActiveIdx}"]`); if(inp) { inp.value = e.key; inp.dispatchEvent(new Event('input', {bubbles: true})); } }, 10);
+    }
+  };
+  document.addEventListener('keydown', window.fillAutoFocusHandler); renderFillVerse(); focusFillBlank();
+}
+
+function renderFillVerse() {
+  const el=$('fill-game-verse'); el.innerHTML=''; const contentWrapper = document.createElement('div'); contentWrapper.className = 'verse-content';
+  state.words.forEach((word,wi)=>{
+    const chronIndex = state.fillBlanks.indexOf(wi);
+    if(chronIndex === -1) { const s=document.createElement('span'); s.className='verse-word'; s.textContent=word; contentWrapper.appendChild(s); contentWrapper.appendChild(document.createTextNode(' ')); } 
+    else {
+      const bc=document.createElement('span'); bc.className='blank-container';
+      if(state.fillPhase==='result') { const s=document.createElement('span'); s.className='blank-input correct'; s.textContent=state.words[wi]; s.style.pointerEvents='none'; bc.appendChild(s); } 
+      else {
+        const inp=document.createElement('input'); inp.type='text'; inp.className='blank-input'; inp.dataset.blank=chronIndex; inp.value=state.fillAnswers[chronIndex]||''; inp.placeholder='___'; inp.autocomplete='off'; inp.spellcheck=false;
+        if (state.fillPhase === 'fixing') { if (state.fillWrongSet.has(chronIndex)) { inp.classList.add('incorrect'); } else if (state.fillCorrectSet.has(chronIndex)) { inp.classList.add('correct'); } else { inp.classList.add('filled'); } } 
+        else { if (inp.value) inp.classList.add('filled'); }
+        inp.addEventListener('input', e => { const v=e.target.value.trim(); state.fillAnswers[chronIndex]=v; e.target.classList.toggle('filled',!!v); checkFillComplete(); });
+        inp.addEventListener('keydown', e => {
+          if(e.key==='Enter' || e.key==='Tab') { e.preventDefault(); if(!state.fillAnswers[chronIndex]) return; if(state.fillAnswers.every(a => a.trim() !== '')) submitFill(); else { let nextIdx = -1; for(let i = 0; i < state.fillBlanks.length; i++) { if(!state.fillAnswers[i]) { nextIdx = i; break; } } if(nextIdx !== -1) { state.fillActiveIdx = nextIdx; renderFillVerse(); focusFillBlank(nextIdx); } else submitFill(); } }
+        });
+        inp.addEventListener('click', (e) => { e.stopPropagation(); state.fillActiveIdx = chronIndex; renderFillVerse(); focusFillBlank(chronIndex); });
+        bc.appendChild(inp);
+      }
+      contentWrapper.appendChild(bc); contentWrapper.appendChild(document.createTextNode(' '));
+    }
+  });
+  el.appendChild(contentWrapper); const ref = document.createElement('div'); ref.className = 'verse-ref-bottom'; ref.textContent = state.verse.ref; el.appendChild(ref);
+}
+
+function focusFillBlank(idx) { const target = idx !== undefined ? idx : state.fillActiveIdx; setTimeout(() => { const inp=document.querySelector(`#fill-game-verse .blank-input[data-blank="${target}"]`); if(inp) { inp.focus(); inp.select(); } }, 50); }
+function checkFillComplete() { $('fill-submit-answer').disabled=!state.fillAnswers.every(a=>a.trim()!==''); }
+
+function submitFill() {
+  state.fillSubmitCount++; let allOk=true; state.fillWrongSet.clear(); state.fillCorrectSet.clear(); let roundCorrectCount = 0; let roundWrongCount = 0;
+  state.fillBlanks.forEach((wi,bi)=>{ const correct=state.fillAnswers[bi]?.toLowerCase().trim()===state.words[wi].toLowerCase(); if(correct) { state.fillCorrectSet.add(bi); if(state.fillSubmitCount===1) state.fillFirstTryOk++; roundCorrectCount++; } else { state.fillWrongSet.add(bi); allOk=false; roundWrongCount++; } });
+  state.wordsCorrect += roundCorrectCount; state.wordsWrong += roundWrongCount;
+  const roundAcc = state.fillBlanks.length > 0 ? Math.min(100, Math.round((state.fillBlanks.length - state.fillWrongSet.size) / state.fillBlanks.length * 100)) : 0;
+  const totalAttempts = state.wordsCorrect + state.wordsWrong; const verseAcc = totalAttempts > 0 ? Math.min(100, Math.round((state.wordsCorrect / totalAttempts) * 100)) : 0;
+  if(allOk) {
+    let roundXP = calculateXP(state.fillFirstTryOk, true); state.xp += roundXP; updateXPHighlight('fill', state.xp);
+    $('fill-round-xp').textContent = roundXP; $('fill-total-xp').textContent = state.xp; $('fill-round-accuracy').textContent = roundAcc + '%'; $('fill-verse-accuracy').textContent = verseAcc + '%';
+    $('fill-results-message').textContent = `Round: ${roundAcc}% | Verse: ${verseAcc}%! +${roundXP} XP earned!`;
+    state.fillPhase='result'; renderFillVerse(); $('fill-submit-answer').disabled=true;
+    setTimeout(()=>{$('fill-game-phase').classList.add('hidden');$('fill-results-phase').classList.remove('hidden');if(state.currentRound===state.totalRounds)confetti();},800);
+  } else { state.fillPhase='fixing'; for(let i=0; i<state.fillBlanks.length; i++) { if(state.fillWrongSet.has(i)) { state.fillActiveIdx = i; break; } } renderFillVerse(); focusFillBlank(); toast(`Fix the ${state.fillWrongSet.size} incorrect word(s)!`,'error',3000); }
+}
+
+// ==================== BANK MODE ====================
+function setupBankRound(count,isFinal) {
+  if(isFinal) state.bankBlanks=state.words.map((_,i)=>i); else state.bankBlanks=selectBlanks(state.words,Math.min(count,state.words.length));
+  state.bankAnswers={}; state.bankPool = [...state.words];
+  if(state.difficulty==='hard') { const extraCount = Math.ceil(state.words.length * 0.5); state.bankPool = state.bankPool.concat(shuffle([...state.words]).slice(0, extraCount)); }
+  state.bankPool = shuffle(state.bankPool); renderBankVerse(); renderBankWordBank();
+}
+
+function renderBankVerse() {
+  const el=$('bank-game-verse'); const contentWrapper = document.createElement('div'); contentWrapper.className = 'verse-content';
+  state.words.forEach((word,wi)=>{
+    if(state.bankBlanks.includes(wi)) {
+      const slot=document.createElement('span'); slot.className='blank-slot'; slot.dataset.index=wi;
+      if(state.bankAnswers[wi]!==undefined) { slot.textContent=state.bankAnswers[wi]; slot.classList.add('filled'); } else { slot.textContent='\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0'; }
+      slot.onclick=()=>{ if(state.bankAnswers[wi]!==undefined) { delete state.bankAnswers[wi]; renderBankVerse(); renderBankWordBank(); checkBankComplete(); } };
+      slot.ondragover=e=>{e.preventDefault();slot.style.borderBottomColor='var(--primary)';}; slot.ondragleave=()=>{slot.style.borderBottomColor='';}; slot.ondrop=e=>{e.preventDefault();placeBankWord(wi,e.dataTransfer.getData('text'));};
+      contentWrapper.appendChild(slot);
+    } else { const s=document.createElement('span');s.className='verse-word';s.textContent=word; contentWrapper.appendChild(s); }
+    contentWrapper.appendChild(document.createTextNode(' '));
+  });
+  el.innerHTML = ''; el.appendChild(contentWrapper); const ref = document.createElement('div'); ref.className = 'verse-ref-bottom'; ref.textContent = state.verse.ref; el.appendChild(ref);
+}
+
+function renderBankWordBank() {
+  const el = $('bank-word-bank'); el.innerHTML = ''; const bankWords = state.bankPool || [];
+  const placedCounts = {}; Object.values(state.bankAnswers).forEach(w => { placedCounts[w] = (placedCounts[w] || 0) + 1; });
+  bankWords.forEach((word, idx) => {
+    const isUsed = (placedCounts[word] || 0) > 0; if (isUsed) placedCounts[word]--;
+    const chip = document.createElement('div'); chip.className = 'word-chip' + (isUsed ? ' used' : ''); chip.textContent = word; chip.draggable = !isUsed;
+    chip.ondragstart = e => { if(isUsed){e.preventDefault();return;} e.dataTransfer.setData('text', word); };
+    chip.onclick = () => { if(isUsed) return; const sortedBlanks = [...state.bankBlanks].sort((a, b) => a - b); const nextBlank = sortedBlanks.find(wi => state.bankAnswers[wi] === undefined); if (nextBlank !== undefined) placeBankWord(nextBlank, word); };
+    el.appendChild(chip);
+  });
+}
+
+function placeBankWord(wi, word) { state.bankAnswers[wi] = word; renderBankVerse(); renderBankWordBank(); checkBankComplete(); }
+function checkBankComplete(){$('bank-submit-answer').disabled=!state.bankBlanks.every(wi=>state.bankAnswers[wi]!==undefined);}
+
+function submitBank() {
+  let roundCorrect=0, roundWrong=0, allOk=true;
+  state.bankBlanks.forEach(wi=>{const c=state.bankAnswers[wi]?.toLowerCase()===state.words[wi].toLowerCase();c?roundCorrect++:roundWrong++;});
+  state.wordsCorrect += roundCorrect; state.wordsWrong += roundWrong;
+  if(allOk){
+    const roundXP=calculateXP(roundCorrect,true); state.xp+=roundXP; updateXPHighlight('bank',state.xp);
+    $('bank-round-xp').textContent=roundXP; $('bank-total-xp').textContent=state.xp; 
+    const roundAcc = 100; const totalAttempts = state.wordsCorrect + state.wordsWrong; const verseAcc = totalAttempts > 0 ? Math.min(100, Math.round((state.wordsCorrect / totalAttempts) * 100)) : 0;
+    $('bank-round-accuracy').textContent=roundAcc+'%'; $('bank-verse-accuracy').textContent=verseAcc+'%';
+    $('bank-results-message').textContent=`Round: ${roundAcc}% | Verse: ${verseAcc}% | +${roundXP} XP earned!`;
+    setTimeout(()=>{$('bank-game-phase').classList.add('hidden');$('bank-results-phase').classList.remove('hidden');if(state.currentRound===state.totalRounds)confetti();},500);
+  } else {
+    state.bankBlanks.forEach(wi=>{const s=document.querySelector(`.blank-slot[data-index="${wi}"]`);if(s)s.classList.add(state.bankAnswers[wi]?.toLowerCase()===state.words[wi].toLowerCase()?'correct':'incorrect');});
+    setTimeout(()=>{state.bankBlanks.forEach(wi=>{if(state.bankAnswers[wi]?.toLowerCase()!==state.words[wi].toLowerCase())delete state.bankAnswers[wi];});renderBankVerse();renderBankWordBank();checkBankComplete();},1500);
+    toast(`${roundWrong} incorrect. Fix!`,'error',3000);
+  }
+}
+
+// ==================== QUIZ MODE ====================
+function setupQuizRound(count,isFinal) {
+  if(isFinal) state.quizBlanks=state.words.map((_,i)=>i); else state.quizBlanks=selectBlanks(state.words,Math.min(count,state.words.length));
+  
+  state.quizBlanks.sort((a, b) => a - b); 
+  state.quizAnswers = {}; 
+  state.quizChecked = false;
+  
+  const allVerseWords = new Set(); 
+  BIBLE_VERSES.forEach(v => v.text.split(' ').forEach(w => allVerseWords.add(w.toLowerCase())));
+  const allVerseWordsList = [...allVerseWords]; 
+  const currentVerseWords = [...new Set(state.words.map(w => w.toLowerCase()))];
+  const targetDistractors = state.difficulty === 'easy' ? 3 : state.difficulty === 'medium' ? 5 : 7;
+  
+  state.quizQuestions = state.quizBlanks.map((wi, qi) => {
+    const correct = state.words[wi]; 
+    const correctLower = correct.toLowerCase(); 
+    const correctLen = correct.length; 
+    const distractors = [];
+    
+    const addDistractor = (word) => { 
+      const wl = word.toLowerCase(); 
+      if(wl === correctLower) return false; 
+      if(distractors.map(d => d.toLowerCase()).includes(wl)) return false; 
+      if(word.length < 2) return false; 
+      distractors.push(word); 
+      return true; 
+    };
+    
+    const sameVerse = currentVerseWords.filter(w => w !== correctLower && w.length >= 2);
+    const otherVerse = allVerseWordsList.filter(w => w !== correctLower && !currentVerseWords.includes(w) && w.length >= 2);
+    
+    let pool = [];
+    if(state.difficulty === 'easy') pool = shuffle([...sameVerse, ...otherVerse]).filter(w => Math.abs(w.length - correctLen) >= 1);
+    else if(state.difficulty === 'medium') { 
+      const medSame = sameVerse.filter(w => Math.abs(w.length - correctLen) <= 1); 
+      const medOther = otherVerse.filter(w => Math.abs(w.length - correctLen) <= 2); 
+      pool = shuffle([...medSame, ...medOther]); 
+    }
+    else { 
+      const hardSame = sameVerse.filter(w => Math.abs(w.length - correctLen) <= 1); 
+      const hardOther = otherVerse.filter(w => Math.abs(w.length - correctLen) <= 1); 
+      const sameLen = allVerseWordsList.filter(w => w !== correctLower && w.length === correctLen); 
+      pool = shuffle([...hardSame, ...hardOther, ...sameLen]); 
+    }
+    
+    for(const word of pool) { if(distractors.length >= targetDistractors) break; addDistractor(word); }
+    const fallback = otherVerse.filter(w => !distractors.includes(w));
+    while(distractors.length < targetDistractors && fallback.length > 0) { 
+      addDistractor(fallback.splice(Math.floor(Math.random() * fallback.length), 1)[0]); 
+    }
+    while(distractors.length < targetDistractors) { 
+      const fb = allVerseWordsList[Math.floor(Math.random() * allVerseWordsList.length)]; 
+      addDistractor(fb); 
+    }
+    
+    return {
+      qi, 
+      wi, 
+      correct, 
+      options: shuffle([correct, ...distractors.slice(0, targetDistractors)]),
+      answeredCorrectly: false
+    };
+  });
+  renderQuizVerse(); 
+  renderQuizQuestions();
+}
+
+function renderQuizVerse() {
+  const el=$('quiz-game-verse'); const contentWrapper = document.createElement('div'); contentWrapper.className = 'verse-content';
+  state.words.forEach((word,wi)=>{
+    const blankNum = state.quizBlanks.indexOf(wi);
+    if(blankNum !== -1){
+      const bc=document.createElement('span');bc.className='blank-container';
+      const num=document.createElement('sup'); num.style.cssText='color:var(--primary);font-weight:800;font-size:0.7em;margin-right:2px;'; num.textContent = blankNum + 1; bc.appendChild(num);
+      const blank=document.createElement('span'); blank.className='blank-slot'; blank.id='quiz-blank-'+blankNum; blank.textContent='\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0'; blank.style.borderBottomColor='var(--primary)'; blank.style.borderBottomStyle='dashed'; bc.appendChild(blank); contentWrapper.appendChild(bc);
+    } else { const s=document.createElement('span');s.className='verse-word';s.textContent=word; contentWrapper.appendChild(s); }
+    contentWrapper.appendChild(document.createTextNode(' '));
+  });
+  el.innerHTML = ''; el.appendChild(contentWrapper); const ref = document.createElement('div'); ref.className = 'verse-ref-bottom'; ref.textContent = state.verse.ref; el.appendChild(ref);
+}
+
+function renderQuizQuestions() {
+  const container = $('quiz-questions-container'); 
+  container.innerHTML = '';
+  
+  state.quizQuestions.forEach(q => {
+    const block = document.createElement('div');
+    block.className = 'question-block';
+    
+    let optionsHTML = '';
+    if(q.answeredCorrectly) {
+      optionsHTML = `<div style="text-align:center;padding:12px;color:var(--success);font-weight:600;">
+        <i class="fa-solid fa-check-circle"></i> Correct!
+      </div>`;
+    } else {
+      optionsHTML = q.options.map((opt, oi) => 
+        `<div class="mc-option" data-qi="${q.qi}" data-oi="${oi}">${opt}</div>`
+      ).join('');
+    }
+    
+    block.innerHTML = `
+      <div class="question-title">
+        <span class="question-number">${q.qi+1}</span>
+        Blank #${q.qi+1}
+      </div>
+      <div class="mc-options" id="quiz-opts-${q.qi}">
+        ${optionsHTML}
+      </div>
+    `;
+    container.appendChild(block);
+    
+    if(!q.answeredCorrectly) {
+      block.querySelectorAll('.mc-option').forEach(opt => {
+        opt.onclick = () => {
+          if(state.quizChecked) return;
+          const qi = parseInt(opt.dataset.qi);
+          state.quizAnswers[qi] = q.options[parseInt(opt.dataset.oi)];
+          
+          block.querySelectorAll('.mc-option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          
+          const blank = $('quiz-blank-' + qi);
+          if(blank) {
+            blank.textContent = state.quizAnswers[qi];
+            blank.style.borderBottomStyle = 'solid';
+            blank.style.borderBottomColor = 'var(--primary)';
+            blank.style.color = 'var(--primary)';
+            blank.style.fontWeight = '600';
+          }
+          checkQuizComplete();
+        };
+      });
+    }
+  });
+}
+
+function checkQuizComplete() {
+  const unanswered = state.quizQuestions.filter(q => !q.answeredCorrectly);
+  const allAnswered = unanswered.every(q => state.quizAnswers[q.qi] !== undefined);
+  $('quiz-submit-answer').disabled = !allAnswered;
+}
+
+function submitQuiz() {
+  if(state.quizChecked) return;
+  state.quizChecked = true;
+  
+  state.quizQuestions.forEach(q => {
+    const qi = q.qi;
+    if(q.answeredCorrectly) return;
+    
+    const userAnswer = state.quizAnswers[qi]?.toLowerCase();
+    const correctAnswer = q.correct.toLowerCase();
+    
+    if(userAnswer === correctAnswer) {
+      state.wordsCorrect++;
+      q.answeredCorrectly = true;
+    } else {
+      state.wordsWrong++;
+      delete state.quizAnswers[qi];
+    }
+  });
+  
+  updateAccuracyDisplay('quiz');
+  
+  state.quizQuestions.forEach(q => {
+    const qi = q.qi;
+    const opts = document.querySelectorAll(`#quiz-opts-${qi} .mc-option`);
+    const blank = $('quiz-blank-' + qi);
+    
+    if(q.answeredCorrectly) {
+      opts.forEach(o => {
+        o.classList.add('disabled');
+        if(q.options[parseInt(o.dataset.oi)].toLowerCase() === q.correct.toLowerCase()) {
+          o.classList.add('correct');
+        }
+      });
+      if(blank) {
+        blank.textContent = q.correct;
+        blank.style.borderBottomStyle = 'solid';
+        blank.style.borderBottomColor = 'var(--success)';
+        blank.style.color = 'var(--success)';
+        blank.style.fontWeight = '700';
+      }
+    } else {
+      opts.forEach(o => {
+        o.classList.add('disabled');
+        if(o.classList.contains('selected')) {
+          o.classList.add('incorrect');
+        }
+      });
+      if(blank) {
+        blank.textContent = '\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0';
+        blank.style.borderBottomColor = 'var(--error)';
+        blank.style.borderBottomStyle = 'dashed';
+        blank.style.animation = 'shake 0.3s ease';
+        setTimeout(() => { blank.style.animation = ''; }, 300);
+      }
+    }
+  });
+  
+  const allCorrect = state.quizQuestions.every(q => q.answeredCorrectly);
+  
+  if(allCorrect) {
+    const totalBlanks = state.quizQuestions.length;
+    const roundXP = calculateXP(totalBlanks, true);
+    state.xp += roundXP;
+    updateXPHighlight('quiz', state.xp);
+    
+    $('quiz-round-xp').textContent = roundXP;
+    $('quiz-total-xp').textContent = state.xp;
+    
+    const totalAttempts = state.wordsCorrect + state.wordsWrong;
+    const verseAcc = totalAttempts > 0 ? Math.min(100, Math.round((state.wordsCorrect / totalAttempts) * 100)) : 0;
+    
+    $('quiz-round-accuracy').textContent = '100%';
+    $('quiz-verse-accuracy').textContent = verseAcc + '%';
+    $('quiz-results-message').textContent = `Round: 100% | Verse: ${verseAcc}% | +${roundXP} XP earned!`;
+    
+    setTimeout(() => {
+      $('quiz-game-phase').classList.add('hidden');
+      $('quiz-results-phase').classList.remove('hidden');
+      if(state.currentRound === state.totalRounds) confetti();
+    }, 800);
+  } else {
+    state.quizChecked = false;
+    
+    state.quizQuestions.forEach(q => {
+      if(!q.answeredCorrectly) {
+        const opts = document.querySelectorAll(`#quiz-opts-${q.qi} .mc-option`);
+        opts.forEach(o => {
+          o.classList.remove('disabled', 'selected', 'correct', 'incorrect');
+          o.style.pointerEvents = '';
+        });
+      }
+    });
+    
+    checkQuizComplete();
+    
+    const remaining = state.quizQuestions.filter(q => !q.answeredCorrectly).length;
+    toast(`${remaining} blank(s) still need the right answer. Keep guessing!`, 'info', 3000);
+  }
+}
+
+// ==================== HELP FUNCTIONALITY ====================
+function activateHelp(mode) {
+  const btn = $(mode + '-help-btn');
+  if (btn.disabled) { toast(state.helpsLeft <= 0 ? 'No helps left!' : `Need 50 XP! You have ${state.stats.totalXp}.`, 'error'); return; }
+  state.stats.totalXp = Math.max(0, state.stats.totalXp - HELP_COST); state.helpsLeft--; updateHelpBtn(mode);
+  const el = $(mode + '-game-verse'); const originalContent = el.innerHTML;
+  el.innerHTML = `<div class="study-phase-wrapper"><div class="study-verse-text">${state.verse.text}</div><div class="study-reference-badge">${state.verse.ref}</div></div>`;
+  toast('Help used! Verse shown for 5 seconds.', 'info', 2000);
+  setTimeout(() => { el.innerHTML = originalContent; }, 5000);
+}
+
+// ==================== NEXT ROUND & COMPLETION ====================
+function nextRound(mode) {
+  if (state.completed) return; state.currentRound++;
+  if(state.currentRound > state.totalRounds){
+    state.completed = true;
+    const acc = (state.wordsCorrect + state.wordsWrong > 0) ? Math.min(100, Math.round((state.wordsCorrect / (state.wordsCorrect + state.wordsWrong)) * 100)) : 100;
+    state.memorizedVersesByMode[mode][state.verse.ref] = { xp: state.xp, accuracy: acc, rounds: state.totalRounds, score: state.xp };
+    const streakBonus = Math.min(state.stats.currentStreak * 5, 50);
+    state.stats.totalXp += state.xp + streakBonus;
+    state.stats.gamesPlayed++; state.stats.versesMastered++; state.stats.totalRight += state.wordsCorrect; state.stats.totalAttempted += state.wordsWrong + state.wordsCorrect;
+    state.stats.currentStreak++; if(state.stats.currentStreak > state.stats.maxStreak) state.stats.maxStreak = state.stats.currentStreak;
+    updateStatsDisplay(); saveState();
+    $(mode+'-results-phase').classList.add('hidden'); $(mode+'-game-phase').classList.add('hidden');
+    let msg = `Mastered ${state.verse.ref}! Session XP: ${state.xp} (Added to Total!)`;
+    if(streakBonus > 0) msg += `\n🔥 Streak Bonus: +${streakBonus} XP`;
+    msg += `\n💰 Total XP: ${state.stats.totalXp} | Accuracy: ${acc}%`;
+    $(mode+'-results-message').textContent=msg; $(mode+'-round-xp').textContent=state.xp; $(mode+'-round-accuracy').textContent=acc+'%'; $(mode+'-total-xp').textContent=state.stats.totalXp;
+    if(!state.createdVerses[mode].some(v=>v.ref===state.verse.ref)){state.createdVerses[mode].push({ref:state.verse.ref,text:state.verse.text,words:state.words.length,date:new Date().toLocaleDateString(),difficulty:state.difficulty});saveState();}
+    state.inGame=false; updateUIGameState(); $(mode+'-results-phase').classList.remove('hidden'); confetti();
+    toast('Verse mastered! Stats updated! 🎉','success',5000);
+    $(mode+'-next-round').innerHTML='<i class="fa-solid fa-house"></i> Back to Home';
+    $(mode+'-next-round').onclick=()=>{state.inGame=false;showScreen('home-screen');};
+    return;
+  }
+  $(mode+'-results-phase').classList.add('hidden'); startRound(mode);
+}
+
+// ==================== NAVIGATION & RULES ====================
+function handleRulesNav(screenId) { showScreen(screenId+'-screen'); }
+
+function handleNavigation(screen) { 
+  if(state.inGame && !state.completed){ 
+    state.pendingNavigation=screen; 
+    $('cancel-modal').classList.add('active'); 
+  } else { 
+    doNavigation(screen); 
+  } 
+}
+
+function doNavigation(screen) {
+  state.inGame=false; stopStudy(); updateUIGameState();
+  if(window.fillAutoFocusHandler) document.removeEventListener('keydown', window.fillAutoFocusHandler);
+  if(['fill','bank','quiz'].includes(screen)){
+    renderVerseList(screen); $(screen+'-verse-select').classList.remove('hidden'); $(screen+'-difficulty-select').classList.add('hidden');
+    $(screen+'-study-phase').classList.add('hidden'); $(screen+'-game-phase').classList.add('hidden'); $(screen+'-results-phase').classList.add('hidden');
+    state.roundConfigs=[];
+  }
+  showScreen(screen+'-screen'); state.pendingNavigation=null;
+}
+
+// ==================== RANDOM MODE (with confirmation flow) ====================
+function doRandom() {
+  const modes = ['fill', 'bank', 'quiz'];
+  const diffs = ['easy', 'medium', 'hard'];
+  state.mode = modes[Math.floor(Math.random() * modes.length)];
+  state.difficulty = diffs[Math.floor(Math.random() * diffs.length)];
+  state.verse = BIBLE_VERSES[Math.floor(Math.random() * BIBLE_VERSES.length)];
+  
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`.mode-card[data-mode="${state.mode}"]`)?.classList.add('selected');
+  
+  toast(`Random: ${state.mode.toUpperCase()} | ${state.difficulty.toUpperCase()} | ${state.verse.ref}`, 'info');
+  showScreen(state.mode + '-screen');
+  startStudy(state.mode);
+}
+
+function handleRandom() {
+  if(state.inGame && !state.completed) {
+    state.pendingNavigation = 'random';
+    $('cancel-modal').classList.add('active');
+    return;
+  }
+  doRandom();
+}
+
+// ==================== UI GAME STATE UPDATES ====================
+function updateUIGameState() {
+  const isPlaying = state.inGame && !state.completed;
+  // Style nav links but keep them clickable for confirmation flow
+  document.querySelectorAll('.nav-link[data-screen]').forEach(link => {
+    const screen = link.dataset.screen;
+    if(['fill','bank','quiz','home'].includes(screen)) {
+      link.style.opacity = isPlaying ? '0.7' : '';
+      link.style.cursor = 'pointer';
+    }
+  });
+  // Random button: always clickable but styled
+  $('nav-random-btn').style.opacity = isPlaying ? '0.7' : '';
+  $('nav-random-btn').style.cursor = 'pointer';
+}
+
+// ==================== STATS & OTHER ====================
+function updateStatsDisplay() {
+  const uniqueMemo = new Set([...Object.keys(state.memorizedVersesByMode.fill), ...Object.keys(state.memorizedVersesByMode.bank), ...Object.keys(state.memorizedVersesByMode.quiz)]);
+  state.stats.versesMastered = uniqueMemo.size;
+  $('stats-grid').innerHTML=`<div class="stat-card"><i class="fa-solid fa-coins stat-icon xp"></i><div class="stat-val">${state.stats.totalXp}</div><div class="stat-label">Total XP</div></div><div class="stat-card"><i class="fa-solid fa-trophy stat-icon trophy"></i><div class="stat-val">${state.stats.versesMastered}</div><div class="stat-label">Verses Mastered</div></div><div class="stat-card"><i class="fa-solid fa-gamepad stat-icon games"></i><div class="stat-val">${state.stats.gamesPlayed}</div><div class="stat-label">Games Played</div></div><div class="stat-card"><i class="fa-solid fa-fire stat-icon fire"></i><div class="stat-val">${state.stats.currentStreak}</div><div class="stat-label">Current Streak</div></div><div class="stat-card"><i class="fa-solid fa-medal stat-icon medal"></i><div class="stat-val">${state.stats.maxStreak}</div><div class="stat-label">Best Streak</div></div>`;
+  $('stats-right').textContent=state.stats.totalRight; $('stats-attempted').textContent=state.stats.totalAttempted;
+  $('stats-acc').textContent=state.stats.totalAttempted?Math.min(100, Math.round(state.stats.totalRight/state.stats.totalAttempted*100))+'%':'0%';
+  const mvList = $('memorized-verse-list'); 
+  const allMemo = {...state.memorizedVersesByMode.fill, ...state.memorizedVersesByMode.bank, ...state.memorizedVersesByMode.quiz};
+  if(Object.keys(allMemo).length === 0) { mvList.innerHTML = '<p style="color:var(--gray);padding:1rem;">No verses memorized yet. Start playing to build your collection!</p>'; } 
+  else { mvList.innerHTML = Object.entries(allMemo).map(([ref, data]) => `<div class="memorized-verse-item"><div class="memorized-verse-ref"><i class="fa-solid fa-check-circle" style="color:var(--success);margin-right:6px;"></i>${ref} - Verse Memorized</div><div class="memorized-verse-xp"><i class="fa-solid fa-trophy"></i> ${data.xp || 0} XP | Acc: ${data.accuracy || 0}% | Rounds: ${data.rounds || 0} | Score: ${data.score || 0}</div></div>`).join(''); }
+}
+
+// ==================== TUTORIAL SYSTEM ====================
+const TUTORIALS = {
+  fill: { title: "Fill in the Blank Tutorial", steps: [
+      { icon: "fa-solid fa-keyboard", title: "Welcome!", desc: "Let's learn how to fill in the blanks! In this mode, you'll <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>type the missing words</span> to complete Bible verses." },
+      { icon: "fa-solid fa-magnifying-glass", title: "Choose a Verse", desc: "Pick a verse from the list or <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>fetch one</span> by typing a reference like 'John 3:16'." },
+      { icon: "fa-solid fa-seedling", title: "Select Difficulty", desc: "Choose <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Seedling</span> (easy), <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Disciple</span> (medium), or <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Apostle</span> (hard). More blanks = more challenge!" },
+      { icon: "fa-solid fa-book-open", title: "Study Phase", desc: "Memorize the verse for 30 seconds. Click <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>I'm Ready!</span> to skip, or use <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>+20s</span> for extra time (costs 15 XP)." },
+      { icon: "fa-solid fa-pen-to-square", title: "Start Typing!", desc: "Just start typing! The first keystroke focuses the first blank. Press <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Enter</span> or <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Tab</span> to move to the next blank." },
+      { icon: "fa-solid fa-check", title: "Submit & Learn", desc: "When all blanks are filled, click Submit. Correct words turn <span style='display:inline-block;background:rgba(22,163,74,0.1);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--success);'>green</span>, incorrect turn <span style='display:inline-block;background:rgba(239,68,68,0.1);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--error);'>red</span>. Fix mistakes and try again!" },
+      { icon: "fa-solid fa-trophy", title: "Complete!", desc: "Master the entire verse to earn XP and add it to your memorized collection. Press Enter on results screens to continue. 🎉" }
+    ]},
+  bank: { title: "Word Bank Tutorial", steps: [
+      { icon: "fa-solid fa-layer-group", title: "Welcome!", desc: "In Word Bank mode, you'll <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>drag or click words</span> from a bank to fill the blanks." },
+      { icon: "fa-solid fa-magnifying-glass", title: "Choose a Verse", desc: "Pick a verse from the list or <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>fetch one</span> by typing a reference like 'John 3:16'." },
+      { icon: "fa-solid fa-seedling", title: "Select Difficulty", desc: "Choose your challenge level. Higher difficulties add more blanks per round and include extra words in the bank!" },
+      { icon: "fa-solid fa-book-open", title: "Study Phase", desc: "Memorize the verse. Use <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>+20s</span> for extra study time if needed (costs 15 XP)." },
+      { icon: "fa-solid fa-hand-pointer", title: "Fill the Blanks", desc: "<strong>Drag</strong> words to blanks, or <strong>click a word</strong> then <strong>click a blank</strong>. Click a filled blank to return its word to the bank." },
+      { icon: "fa-solid fa-check", title: "Submit & Review", desc: "When all blanks are filled, click Submit. Correct placements turn <span style='display:inline-block;background:rgba(22,163,74,0.1);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--success);'>green</span>, incorrect turn <span style='display:inline-block;background:rgba(239,68,68,0.1);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--error);'>red</span>. Fix and retry!" },
+      { icon: "fa-solid fa-trophy", title: "Final Round", desc: "The last round blanks the ENTIRE verse! Master it to complete the game and earn bonus XP. 🏆" }
+    ]},
+  quiz: { title: "Quiz Mode Tutorial", steps: [
+      { icon: "fa-solid fa-list-check", title: "Welcome!", desc: "In Quiz mode, you'll <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>select the correct word</span> from multiple-choice options for each blank." },
+      { icon: "fa-solid fa-magnifying-glass", title: "Choose a Verse", desc: "Pick a verse or <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>fetch one</span> by typing a reference like 'John 3:16'." },
+      { icon: "fa-solid fa-seedling", title: "Select Difficulty", desc: "<span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Easy</span>: 4 options | <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Medium</span>: 6 options | <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Hard</span>: 8 options per blank." },
+      { icon: "fa-solid fa-book-open", title: "Study Phase", desc: "Memorize the verse. Skip early or use <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>+20s</span> for extra time (15 XP cost)." },
+      { icon: "fa-solid fa-circle-question", title: "Answer Questions", desc: "Each blank has a numbered question. <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Click an option</span> to select it. You must answer ALL before submitting." },
+      { icon: "fa-solid fa-check-double", title: "Submit All", desc: "Click <span style='display:inline-block;background:rgba(2,132,199,0.1);padding:2px 8px;border-radius:6px;font-weight:600;color:var(--primary);border:1px dashed var(--primary);'>Submit All Answers</span> to check. Correct options turn <span style='display:inline-block;background:rgba(22,163,74,0.1);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--success);'>green</span>, wrong turn <span style='display:inline-block;background:rgba(239,68,68,0.1);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--error);'>red</span>. Fix and retry!" },
+      { icon: "fa-solid fa-trophy", title: "Complete!", desc: "Master the verse to earn XP and add it to your collection. Your accuracy and streaks boost your total score! 🎯" }
+    ]}
+};
+
+let tutorialState = { mode: null, step: 0 };
+
+function startTutorial(mode) {
+  tutorialState = { mode, step: 0 };
+  $('tutorial-overlay').style.display = 'flex';
+  renderTutorialStep();
+}
+
+function renderTutorialStep() {
+  const t = TUTORIALS[tutorialState.mode];
+  const s = t.steps[tutorialState.step];
+  $('tutorial-title').textContent = s.title;
+  $('tutorial-desc').innerHTML = s.desc;
+  $('tutorial-icon').innerHTML = `<i class="${s.icon}"></i>`;
+  const prog = $('tutorial-progress'); prog.innerHTML = '';
+  t.steps.forEach((_, i) => { const dot = document.createElement('div'); dot.className = 'tutorial-dot' + (i === tutorialState.step ? ' active' : ''); dot.style.cssText='width:10px;height:10px;border-radius:50%;background:'+(i===tutorialState.step?'var(--primary)':'var(--border)')+';transition:var(--transition);'+(i===tutorialState.step?'transform:scale(1.2);':''); prog.appendChild(dot); });
+  $('tutorial-prev').disabled = tutorialState.step === 0;
+  $('tutorial-next').innerHTML = tutorialState.step === t.steps.length - 1 ? 'Finish <i class="fa-solid fa-flag-checkered"></i>' : 'Next <i class="fa-solid fa-arrow-right"></i>';
+}
+
+function nextTutorialStep() {
+  const t = TUTORIALS[tutorialState.mode];
+  if (tutorialState.step < t.steps.length - 1) { tutorialState.step++; renderTutorialStep(); } 
+  else { endTutorial(); toast('Tutorial complete! You\'re ready to play. 🎉', 'success'); }
+}
+
+function prevTutorialStep() {
+  if (tutorialState.step > 0) { tutorialState.step--; renderTutorialStep(); }
+}
+
+function endTutorial() {
+  $('tutorial-overlay').style.display = 'none';
+  tutorialState = { mode: null, step: 0 };
+}
+
+// ==================== INIT ====================
+function init() {
+  loadState();
+  document.querySelectorAll('.nav-link').forEach(l=>l.addEventListener('click',e=>{e.preventDefault();handleNavigation(l.dataset.screen);}));
+  $('home-btn').addEventListener('click',()=>handleNavigation('home'));
+  $('stats-back').addEventListener('click',()=>handleNavigation('home'));
+  $('rules-back-to-home').addEventListener('click',()=>handleNavigation('home'));
+  
+  // Modal handlers
+  $('cancel-stay').addEventListener('click',()=>{
+    $('cancel-modal').classList.remove('active');
+    state.pendingNavigation=null;
+  });
+  $('cancel-quit').addEventListener('click',()=>{ 
+    $('cancel-modal').classList.remove('active'); 
+    if(state.pendingNavigation){ 
+      state.xp=0; state.wordsCorrect=0; state.wordsWrong=0; state.completed=false; 
+      state.inGame = false;
+      toast('Session XP forfeited.','warning'); 
+      if(state.pendingNavigation === 'random') {
+        doRandom();
+      } else {
+        doNavigation(state.pendingNavigation); 
+      }
+      state.pendingNavigation = null;
+    } 
+  });
+  
+  document.querySelectorAll('.mode-card').forEach(card=>card.addEventListener('click',()=>{document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');state.mode=card.dataset.mode;}));
+  $('start-game-btn').addEventListener('click',()=>handleNavigation(state.mode));
+  
+  ['fill','bank','quiz'].forEach(mode=>{
+    $(mode+'-back').addEventListener('click',()=>handleNavigation('home'));
+    $(mode+'-back-verses').addEventListener('click',()=>{$(mode+'-difficulty-select').classList.add('hidden');$(mode+'-verse-select').classList.remove('hidden');});
+    $(mode+'-start-game').addEventListener('click',()=>startStudy(mode));
+    $(mode+'-skip-study').addEventListener('click',()=>skipStudy(mode));
+    $(mode+'-submit-answer').addEventListener('click',()=>{if(mode==='fill')submitFill();else if(mode==='bank')submitBank();else submitQuiz();});
+    $(mode+'-next-round').addEventListener('click',()=>nextRound(mode));
+    $(mode+'-fetch-btn').addEventListener('click',()=>{const r=$(mode+'-api-ref').value.trim();r?fetchVerse(r,mode):toast('Enter ref','error');});
+    $(mode+'-api-ref').addEventListener('keydown',e=>{if(e.key==='Enter'){const r=e.target.value.trim();r&&fetchVerse(r,mode);}});
+    $(mode+'-extra-study').addEventListener('click',()=>{ if(state.extraStudyUses<=0) { toast('No extra time left!','info'); return; } if(state.xp <= EXTRA_STUDY_COST) { toast(`Need >15 XP! You have ${state.xp}.`,'error'); return; } state.extraStudyUses--; state.xp -= EXTRA_STUDY_COST; state.studySecondsInitial += 20; state.studySeconds += 20; $(mode+'-timer').textContent = state.studySeconds; updateTimerCircle(mode, state.studySeconds); updateExtraStudyBtn(mode); updateXPHighlight(mode, state.xp); toast(`-15 XP deducted! +20s added.`,'info'); });
+    $(mode+'-help-btn').addEventListener('click',()=>activateHelp(mode));
+  });
+  
+  document.querySelectorAll('.difficulty-card').forEach(c=>c.addEventListener('click',()=>{c.parentElement.querySelectorAll('.difficulty-card').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');state.difficulty=c.dataset.difficulty;}));
+  document.addEventListener('keydown',e=>{ if(e.key==='Enter')['fill','bank','quiz'].forEach(mode=>{if(state.inGame&&$(mode+'-results-phase')&&!$(mode+'-results-phase').classList.contains('hidden')){e.preventDefault();nextRound(mode);}}); });
+  window.addEventListener('scroll',()=>{$('main-nav').classList.toggle('scrolled',window.scrollY>10);});
+  $('nav-random-btn').addEventListener('click', handleRandom);
+  ['fill','bank','quiz'].forEach(m=>renderVerseList(m));
+  
+  $('stats-reset').addEventListener('click', resetStats);
+  
+  // Tutorial Triggers
+  $('rules-tutorial-fill').addEventListener('click', () => startTutorial('fill'));
+  $('rules-tutorial-bank').addEventListener('click', () => startTutorial('bank'));
+  $('rules-tutorial-quiz').addEventListener('click', () => startTutorial('quiz'));
+  
+  $('tutorial-close').addEventListener('click', endTutorial);
+  $('tutorial-next').addEventListener('click', nextTutorialStep);
+  $('tutorial-prev').addEventListener('click', prevTutorialStep);
+  $('tutorial-skip').addEventListener('click', () => { endTutorial(); toast('Tutorial skipped. You can replay it anytime in the Rules section.','info'); });
+  
+  updateStatsDisplay();
+  updateUIGameState();
+  toast('Welcome! Visit Rules for interactive tutorials or start playing!','info',4000);
+}
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+</script>
+</body>
+</html>
