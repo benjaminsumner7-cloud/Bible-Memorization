@@ -343,7 +343,7 @@ body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8
         <div class="game-info-item"><span class="game-info-label">Round:</span><span class="game-info-value"><span id="fill-round-num">1</span>/<span id="fill-total-rounds">6</span></span></div>
         <div class="game-info-item"><span class="game-info-label">Session XP:</span><span class="game-info-value" id="fill-xp">0</span></div>
         <div class="game-info-item"><span class="game-info-label">Accuracy:</span><span class="game-info-value" id="fill-accuracy">—</span></div>
-        <button class="study-extra-btn" id="fill-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">2 left</span></button>
+        <button class="study-extra-btn" id="fill-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">3 left</span></button>
       </div>
       <div class="verse-display" id="fill-game-verse"></div>
       <div class="text-center mt-4">
@@ -410,7 +410,7 @@ body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8
         <div class="game-info-item"><span class="game-info-label">Round:</span><span class="game-info-value"><span id="bank-round-num">1</span>/<span id="bank-total-rounds">6</span></span></div>
         <div class="game-info-item"><span class="game-info-label">Session XP:</span><span class="game-info-value" id="bank-xp">0</span></div>
         <div class="game-info-item"><span class="game-info-label">Accuracy:</span><span class="game-info-value" id="bank-accuracy">—</span></div>
-        <button class="study-extra-btn" id="bank-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">2 left</span></button>
+        <button class="study-extra-btn" id="bank-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">3 left</span></button>
       </div>
       <div class="verse-display" id="bank-game-verse"></div>
       <div class="word-bank" id="bank-word-bank"></div>
@@ -478,7 +478,7 @@ body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8
         <div class="game-info-item"><span class="game-info-label">Round:</span><span class="game-info-value"><span id="quiz-round-num">1</span>/<span id="quiz-total-rounds">6</span></span></div>
         <div class="game-info-item"><span class="game-info-label">Session XP:</span><span class="game-info-value" id="quiz-xp">0</span></div>
         <div class="game-info-item"><span class="game-info-label">Accuracy:</span><span class="game-info-value" id="quiz-accuracy">—</span></div>
-        <button class="study-extra-btn" id="quiz-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">2 left</span></button>
+        <button class="study-extra-btn" id="quiz-help-btn" disabled><i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">3 left</span></button>
       </div>
       <div class="verse-display" id="quiz-game-verse"></div>
       <div class="quiz-questions-wrap" id="quiz-questions-container"></div>
@@ -868,16 +868,20 @@ function skipStudy(mode) { stopStudy(); $(mode+'-study-phase').classList.add('hi
 
 function updateExtraStudyBtn(mode) {
   const btn=$(mode+'-extra-study'); if(!btn) return;
-  const count = state.extraStudyUses; const canAfford = state.xp > EXTRA_STUDY_COST;
+  const count = state.extraStudyUses; 
+  const canAfford = state.stats.totalXp > EXTRA_STUDY_COST; // FIXED: Check total XP, not session XP
   btn.disabled = count <= 0 || !canAfford;
   btn.innerHTML = count <= 0 ? `<i class="fa-solid fa-lock"></i> No extra time left` : !canAfford ? `<i class="fa-solid fa-clock"></i> Need >15 XP` : `<i class="fa-solid fa-clock"></i> +20s <span class="study-extra-badge">${count} left</span>`;
 }
 
 function updateHelpBtn(mode) {
   const btn = $(mode + '-help-btn'); if(!btn) return;
-  const count = state.helpsLeft; const canAfford = state.stats.totalXp >= HELP_COST;
+  const count = state.helpsLeft; 
+  const canAfford = state.stats.totalXp >= HELP_COST;
   btn.disabled = count <= 0 || !canAfford;
-  btn.innerHTML = count <= 0 ? `<i class="fa-solid fa-lock"></i> No helps left` : !canAfford ? `<i class="fa-solid fa-clock"></i> Need 50 XP` : `<i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">${count} left</span>`;
+  // Update badge text with correct count based on difficulty
+  const badgeText = count <= 0 ? 'No helps left' : `${count} left`;
+  btn.innerHTML = count <= 0 ? `<i class="fa-solid fa-lock"></i> No helps left` : !canAfford ? `<i class="fa-solid fa-clock"></i> Need 50 XP` : `<i class="fa-solid fa-eye"></i> Peek Verse <span class="study-extra-badge">${badgeText}</span>`;
 }
 
 function startRound(mode) {
@@ -1270,12 +1274,42 @@ function submitQuiz() {
 // ==================== HELP FUNCTIONALITY ====================
 function activateHelp(mode) {
   const btn = $(mode + '-help-btn');
-  if (btn.disabled) { toast(state.helpsLeft <= 0 ? 'No helps left!' : `Need 50 XP! You have ${state.stats.totalXp}.`, 'error'); return; }
-  state.stats.totalXp = Math.max(0, state.stats.totalXp - HELP_COST); state.helpsLeft--; updateHelpBtn(mode);
-  const el = $(mode + '-game-verse'); const originalContent = el.innerHTML;
-  el.innerHTML = `<div class="study-phase-wrapper"><div class="study-verse-text">${state.verse.text}</div><div class="study-reference-badge">${state.verse.ref}</div></div>`;
+  if (btn.disabled) { 
+    toast(state.helpsLeft <= 0 ? 'No helps left!' : `Need 50 XP! You have ${state.stats.totalXp}.`, 'error'); 
+    return; 
+  }
+  
+  // Deduct XP and update state
+  state.stats.totalXp = Math.max(0, state.stats.totalXp - HELP_COST); 
+  state.helpsLeft--; 
+  updateHelpBtn(mode);
+  updateStatsDisplay();
+  saveState();
+  
+  const el = $(mode + '-game-verse'); 
+  const originalContent = el.innerHTML;
+  
+  // Show the full verse temporarily with larger text for better visibility
+  el.innerHTML = `<div class="study-phase-wrapper"><div class="study-verse-text" style="font-size:2.2rem;font-weight:600;">${state.verse.text}</div><div class="study-reference-badge">${state.verse.ref}</div></div>`;
+  
   toast('Help used! Verse shown for 5 seconds.', 'info', 2000);
-  setTimeout(() => { el.innerHTML = originalContent; }, 5000);
+  
+  // Restore the game state after 5 seconds
+  setTimeout(() => { 
+    // Re-render the verse based on current mode to restore all interactivity
+    if(mode === 'fill') { 
+      renderFillVerse(); 
+      checkFillComplete(); 
+    } else if(mode === 'bank') { 
+      renderBankVerse(); 
+      renderBankWordBank(); 
+      checkBankComplete(); 
+    } else if(mode === 'quiz') { 
+      renderQuizVerse(); 
+      renderQuizQuestions(); 
+      checkQuizComplete(); 
+    }
+  }, 5000);
 }
 
 // ==================== NEXT ROUND & COMPLETION ====================
@@ -1488,7 +1522,24 @@ function init() {
     $(mode+'-next-round').addEventListener('click',()=>nextRound(mode));
     $(mode+'-fetch-btn').addEventListener('click',()=>{const r=$(mode+'-api-ref').value.trim();r?fetchVerse(r,mode):toast('Enter ref','error');});
     $(mode+'-api-ref').addEventListener('keydown',e=>{if(e.key==='Enter'){const r=e.target.value.trim();r&&fetchVerse(r,mode);}});
-    $(mode+'-extra-study').addEventListener('click',()=>{ if(state.extraStudyUses<=0) { toast('No extra time left!','info'); return; } if(state.xp <= EXTRA_STUDY_COST) { toast(`Need >15 XP! You have ${state.xp}.`,'error'); return; } state.extraStudyUses--; state.xp -= EXTRA_STUDY_COST; state.studySecondsInitial += 20; state.studySeconds += 20; $(mode+'-timer').textContent = state.studySeconds; updateTimerCircle(mode, state.studySeconds); updateExtraStudyBtn(mode); updateXPHighlight(mode, state.xp); toast(`-15 XP deducted! +20s added.`,'info'); });
+    
+    // FIXED: Extra study time now properly checks and deducts from total XP
+    $(mode+'-extra-study').addEventListener('click',()=>{ 
+      if(state.extraStudyUses<=0) { toast('No extra time left!','info'); return; } 
+      if(state.stats.totalXp <= EXTRA_STUDY_COST) { toast(`Need >15 XP! You have ${state.stats.totalXp}.`,'error'); return; } 
+      state.extraStudyUses--; 
+      state.stats.totalXp -= EXTRA_STUDY_COST; 
+      state.studySecondsInitial += 20; 
+      state.studySeconds += 20; 
+      $(mode+'-timer').textContent = state.studySeconds; 
+      updateTimerCircle(mode, state.studySeconds); 
+      updateExtraStudyBtn(mode); 
+      updateStatsDisplay();
+      saveState();
+      toast(`-15 XP deducted from Total! +20s added.`,'info'); 
+    });
+    
+    // Help button functionality
     $(mode+'-help-btn').addEventListener('click',()=>activateHelp(mode));
   });
   
